@@ -102,8 +102,8 @@ You're welcome to make UX improvements or add minor enhancements, as long as the
 
 ## Submission Instructions
 
-1. **Copy** this repository into your own GitHub account.
-2. Create a branch and complete the assigning in that branch
+1. **Copy** this repository into your own GitHub account - do not fork or create a branch in this repository
+2. Create a branch and complete the assigning in that branch.
 4. **Documentation**
     1. Ensure your repository includes setup instructions and an updated README.md.
     2. Provide a short description of your approach to solving each task
