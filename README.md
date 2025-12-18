@@ -52,7 +52,7 @@ You may choose which backend implementation to work with:
 - Introduce a lightweight design system by defining CSS variables (colours, spacing, typography) in `src/style.css` and apply them across components.
 - Enhance the vendor list with hover/focus states, zebra striping, and an accessible empty state.
 - Add a small visual flourish such as a light/dark theme toggle (or similar motif) handled with CSS-first techniques.
-- Document the layout approach, design tokens, breakpoints, and accessibility considerations in this README, including a quick before/after screenshot or Loom link if possible.
+- Document the layout approach, design tokens, breakpoints, and accessibility considerations in this README
 
 ### 2. Delete vendor
 - Implement a delete functionality to allow users to remove vendor entries from the system
