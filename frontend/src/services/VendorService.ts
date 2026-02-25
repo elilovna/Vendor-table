@@ -47,7 +47,7 @@ export const VendorService = {
     }
   },
   
-  async deleteVendor(id: string): Promise<void> {
+  async deleteVendor(id: number): Promise<void> {
     try {
       const response = await fetch(`${API_URL}/vendors/${id}`, {
         method: 'DELETE',

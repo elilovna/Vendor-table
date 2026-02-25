@@ -8,7 +8,8 @@ import type { Vendor } from '../../types/Vendor';
 vi.mock('../../services/VendorService', () => ({
   VendorService: {
     getVendors: vi.fn(),
-    createVendor: vi.fn()
+    createVendor: vi.fn(),
+    deleteVendor: vi.fn()
   }
 }));
 
@@ -36,6 +37,7 @@ describe('VendorStore', () => {
     // Reset mocks
     vi.mocked(VendorService.getVendors).mockReset();
     vi.mocked(VendorService.createVendor).mockReset();
+    vi.mocked(VendorService.deleteVendor).mockReset();
   });
 
   it('has initial state', () => {
@@ -123,16 +125,47 @@ describe('VendorStore', () => {
     it('handles API errors correctly', async () => {
       const error = new Error('API error');
       vi.mocked(VendorService.createVendor).mockRejectedValue(error);
-      
+
       const store = useVendorStore();
-      
+
       try {
         await store.addVendor(newVendor);
         // If we get here, the test should fail because the function should throw
-        expect(true).toBe(false); 
+        expect(true).toBe(false);
       } catch (e) {
         expect(store.loading).toBe(false);
         expect(store.error).toBe('Failed to add vendor. Please try again later.');
+      }
+    });
+  });
+
+  describe('deleteVendor', () => {
+    it('calls API and refreshes vendor list', async () => {
+      vi.mocked(VendorService.deleteVendor).mockResolvedValue();
+      vi.mocked(VendorService.getVendors).mockResolvedValue([mockVendors[1]]);
+
+      const store = useVendorStore();
+      await store.deleteVendor(1);
+
+      expect(VendorService.deleteVendor).toHaveBeenCalledWith(1);
+      expect(VendorService.getVendors).toHaveBeenCalled();
+      expect(store.loading).toBe(false);
+      expect(store.error).toBe(null);
+      expect(store.vendors.length).toBe(1);
+    });
+
+    it('handles API errors correctly', async () => {
+      const error = new Error('Delete failed');
+      vi.mocked(VendorService.deleteVendor).mockRejectedValue(error);
+
+      const store = useVendorStore();
+
+      try {
+        await store.deleteVendor(1);
+        expect(true).toBe(false);
+      } catch (e) {
+        expect(store.loading).toBe(false);
+        expect(store.error).toBe('Failed to delete vendor. Please try again later.');
       }
     });
   });

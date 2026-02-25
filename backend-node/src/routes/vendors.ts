@@ -44,4 +44,25 @@ router.post('/', (req: Request, res: Response) => {
     });
 });
 
+// DELETE /vendors/:id - Delete a vendor
+router.delete('/:id', (req: Request, res: Response) => {
+    const id = Number(req.params.id);
+
+    if (isNaN(id)) {
+        return res.status(400).json({ error: 'Invalid vendor ID' });
+    }
+
+    db.run('DELETE FROM vendors WHERE id = ?', [id], function(err) {
+        if (err) {
+            return res.status(500).json({ error: err.message });
+        }
+
+        if (this.changes === 0) {
+            return res.status(404).json({ error: 'Vendor not found' });
+        }
+
+        res.status(204).send();
+    });
+});
+
 export default router;
