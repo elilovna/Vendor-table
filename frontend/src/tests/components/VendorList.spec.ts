@@ -125,12 +125,12 @@ describe('VendorList', () => {
         ]
       }
     });
-    
+
     // Check that the table exists and has correct structure
     expect(wrapper.find('.vendors-table').exists()).toBe(true);
-    expect(wrapper.findAll('th').length).toBe(5);
+    expect(wrapper.findAll('th').length).toBe(6);
     expect(wrapper.findAll('tbody tr').length).toBe(2);
-    
+
     // Check content of first row
     const firstRow = wrapper.findAll('tbody tr')[0];
     expect(firstRow.findAll('td')[0].text()).toBe('1');
@@ -138,5 +138,45 @@ describe('VendorList', () => {
     expect(firstRow.findAll('td')[2].text()).toBe('John Test');
     expect(firstRow.findAll('td')[3].text()).toBe('john@testcompany.com');
     expect(firstRow.findAll('td')[4].text()).toBe('Supplier');
+  });
+
+  it('renders a delete button for each vendor row', () => {
+    const wrapper = mount(VendorList, {
+      global: {
+        plugins: [
+          createTestingPinia({
+            createSpy: vi.fn,
+            initialState: {
+              vendor: { loading: false, vendors: mockVendors, error: null }
+            }
+          })
+        ]
+      }
+    });
+
+    const deleteButtons = wrapper.findAll('.btn-delete');
+    expect(deleteButtons.length).toBe(2);
+    expect(deleteButtons[0].text()).toBe('Delete');
+  });
+
+  it('opens confirmation dialog when delete button is clicked', async () => {
+    const wrapper = mount(VendorList, {
+      global: {
+        plugins: [
+          createTestingPinia({
+            createSpy: vi.fn,
+            initialState: {
+              vendor: { loading: false, vendors: mockVendors, error: null }
+            }
+          })
+        ]
+      }
+    });
+
+    await wrapper.findAll('.btn-delete')[0].trigger('click');
+
+    const dialog = wrapper.find('.confirm-dialog');
+    expect(dialog.exists()).toBe(true);
+    expect(dialog.text()).toContain('Test Company 1');
   });
 });

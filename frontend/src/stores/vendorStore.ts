@@ -39,11 +39,28 @@ export const useVendorStore = defineStore('vendor', () => {
     }
   }
 
+  async function deleteVendor(id: number) {
+    loading.value = true
+    error.value = null
+
+    try {
+      await VendorService.deleteVendor(id)
+      await fetchVendors()
+    } catch (err) {
+      error.value = 'Failed to delete vendor. Please try again later.'
+      console.error(err)
+      throw err
+    } finally {
+      loading.value = false
+    }
+  }
+
   return {
     vendors,
     loading,
     error,
     fetchVendors,
-    addVendor
+    addVendor,
+    deleteVendor
   }
 })

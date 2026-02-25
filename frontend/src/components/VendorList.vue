@@ -12,6 +12,7 @@
           <th>Contact Person</th>
           <th>Email</th>
           <th>Partner Type</th>
+          <th>Actions</th>
         </tr>
       </thead>
       <tbody>
@@ -21,18 +22,49 @@
           <td>{{ vendor.contact_person }}</td>
           <td>{{ vendor.email }}</td>
           <td>{{ vendor.partner_type }}</td>
+          <td>
+            <button class="btn-delete" @click="confirmDelete(vendor)">Delete</button>
+          </td>
         </tr>
       </tbody>
     </table>
+
+    <ConfirmDialog
+      :open="showDeleteDialog"
+      title="Delete Vendor"
+      :message="`Are you sure you want to delete '${vendorToDelete?.name}'? This action cannot be undone.`"
+      @confirm="handleDelete"
+      @cancel="showDeleteDialog = false"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue';
+import { ref, onMounted } from 'vue';
 import { useVendorStore } from '../stores/vendorStore';
+import ConfirmDialog from './ConfirmDialog.vue';
+import type { Vendor } from '../types/Vendor';
 
-// Using the vendor store directly, no need for local props or state
 const vendorStore = useVendorStore();
+const showDeleteDialog = ref(false);
+const vendorToDelete = ref<Vendor | null>(null);
+
+function confirmDelete(vendor: Vendor) {
+  vendorToDelete.value = vendor;
+  showDeleteDialog.value = true;
+}
+
+async function handleDelete() {
+  if (vendorToDelete.value?.id) {
+    try {
+      await vendorStore.deleteVendor(vendorToDelete.value.id);
+    } catch {
+      // Error is handled in the store
+    }
+  }
+  showDeleteDialog.value = false;
+  vendorToDelete.value = null;
+}
 
 onMounted(() => {
   vendorStore.fetchVendors();
@@ -75,5 +107,19 @@ onMounted(() => {
   padding: 20px;
   text-align: center;
   color: #666;
+}
+
+.btn-delete {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 4px;
+  background-color: #e74c3c;
+  color: white;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.btn-delete:hover {
+  background-color: #c0392b;
 }
 </style>
