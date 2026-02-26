@@ -1,88 +1,95 @@
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
 
-/* ── Design System: Blue / Steel ── */
+/* ── Design Tokens: Blue / Steel ── */
 
 :root {
   /* Colors */
-  --background: hsl(209 40% 96%);
-  --foreground: hsl(222 47% 11%);
+  --color-primary: hsl(200 98% 39%);
+  --color-primary-hover: hsl(200 98% 33%);
+  --color-primary-foreground: hsl(204 100% 97%);
 
-  --card: hsl(210 40% 98%);
-  --card-foreground: hsl(222 47% 11%);
+  --color-surface: hsl(210 40% 98%);
+  --color-surface-alt: hsl(209 40% 96%);
+  --color-background: hsl(209 40% 96%);
 
-  --popover: hsl(214 31% 91%);
-  --popover-foreground: hsl(222 47% 11%);
+  --color-text: hsl(222 47% 11%);
+  --color-text-secondary: hsl(215 20% 65%);
 
-  --primary: hsl(200 98% 39%);
-  --primary-foreground: hsl(204 100% 97%);
+  --color-secondary: hsl(215 24% 26%);
+  --color-secondary-foreground: hsl(210 40% 98%);
 
-  --secondary: hsl(215 24% 26%);
-  --secondary-foreground: hsl(210 40% 98%);
+  --color-border: hsl(212 26% 83%);
+  --color-input: hsl(212 26% 83%);
 
-  --muted: hsl(215 20% 65%);
-  --muted-foreground: hsl(222 47% 11%);
+  --color-danger: hsl(0 72% 50%);
+  --color-danger-hover: hsl(0 72% 44%);
+  --color-danger-foreground: hsl(0 85% 97%);
 
-  --accent: hsl(210 40% 98%);
-  --accent-foreground: hsl(215 19% 34%);
+  --color-success: hsl(152 60% 46%);
+  --color-success-foreground: hsl(0 0% 100%);
 
-  --destructive: hsl(0 72% 50%);
-  --destructive-foreground: hsl(0 85% 97%);
+  --color-focus-ring: hsl(200 98% 39% / 0.25);
 
-  --success: hsl(152 60% 46%);
-  --success-foreground: hsl(0 0% 100%);
+  /* Spacing */
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+  --spacing-2xl: 3rem;
 
-  --border: hsl(212 26% 83%);
-  --input: hsl(212 26% 83%);
-  --ring: hsl(200 98% 39%);
+  /* Typography */
+  --font-family-base: 'Inter', ui-sans-serif, system-ui, -apple-system,
+    BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --font-size-sm: 0.8125rem;
+  --font-size-base: 0.875rem;
+  --font-size-lg: 1.125rem;
+  --font-size-xl: 1.25rem;
 
-  --radius: 0.5rem;
+  /* Radius */
+  --radius-sm: 0.375rem;
+  --radius-md: 0.5rem;
 
-  /* Fonts */
-  --font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  /* Transitions */
+  --transition-fast: 150ms ease;
+  --transition-normal: 250ms ease;
 
   /* Shadows */
   --shadow-sm: 0 1px 3px 0 hsl(0 0% 0% / 0.1), 0 1px 2px -1px hsl(0 0% 0% / 0.1);
-  --shadow: 0 1px 3px 0 hsl(0 0% 0% / 0.1), 0 1px 2px -1px hsl(0 0% 0% / 0.1);
   --shadow-md: 0 4px 6px -1px hsl(0 0% 0% / 0.1), 0 2px 4px -2px hsl(0 0% 0% / 0.1);
   --shadow-lg: 0 10px 15px -3px hsl(0 0% 0% / 0.1), 0 4px 6px -4px hsl(0 0% 0% / 0.1);
 }
 
-/* ── Dark Mode ── */
+/* ── Dark Theme ── */
 
-.dark {
-  --background: hsl(222 47% 11%);
-  --foreground: hsl(210 40% 98%);
+html[data-theme="dark"] {
+  --color-primary: hsl(198 93% 59%);
+  --color-primary-hover: hsl(198 93% 50%);
+  --color-primary-foreground: hsl(204 80% 15%);
 
-  --card: hsl(217 32% 17%);
-  --card-foreground: hsl(210 40% 98%);
+  --color-surface: hsl(217 32% 17%);
+  --color-surface-alt: hsl(222 47% 11%);
+  --color-background: hsl(222 47% 11%);
 
-  --popover: hsl(215 24% 26%);
-  --popover-foreground: hsl(210 40% 98%);
+  --color-text: hsl(210 40% 98%);
+  --color-text-secondary: hsl(215 16% 46%);
 
-  --primary: hsl(198 93% 59%);
-  --primary-foreground: hsl(204 80% 15%);
+  --color-secondary: hsl(212 26% 83%);
+  --color-secondary-foreground: hsl(228 84% 4%);
 
-  --secondary: hsl(212 26% 83%);
-  --secondary-foreground: hsl(228 84% 4%);
+  --color-border: hsl(215 19% 34%);
+  --color-input: hsl(215 19% 34%);
 
-  --muted: hsl(215 16% 46%);
-  --muted-foreground: hsl(210 40% 98%);
+  --color-danger: hsl(0 84% 60%);
+  --color-danger-hover: hsl(0 84% 52%);
+  --color-danger-foreground: hsl(0 85% 97%);
 
-  --accent: hsl(228 84% 4%);
-  --accent-foreground: hsl(215 20% 65%);
+  --color-success: hsl(152 50% 38%);
+  --color-success-foreground: hsl(0 0% 100%);
 
-  --destructive: hsl(0 84% 60%);
-  --destructive-foreground: hsl(0 85% 97%);
-
-  --success: hsl(152 50% 38%);
-  --success-foreground: hsl(0 0% 100%);
-
-  --border: hsl(215 19% 34%);
-  --input: hsl(215 19% 34%);
-  --ring: hsl(198 93% 59%);
+  --color-focus-ring: hsl(198 93% 59% / 0.25);
 
   --shadow-sm: 0 1px 3px 0 hsl(0 0% 0% / 0.2), 0 1px 2px -1px hsl(0 0% 0% / 0.2);
-  --shadow: 0 1px 3px 0 hsl(0 0% 0% / 0.2), 0 1px 2px -1px hsl(0 0% 0% / 0.2);
   --shadow-md: 0 4px 6px -1px hsl(0 0% 0% / 0.3), 0 2px 4px -2px hsl(0 0% 0% / 0.2);
   --shadow-lg: 0 10px 15px -3px hsl(0 0% 0% / 0.3), 0 4px 6px -4px hsl(0 0% 0% / 0.2);
 }
@@ -98,21 +105,42 @@
 }
 
 body {
-  font-family: var(--font-sans);
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-base);
   line-height: 1.6;
-  color: var(--foreground);
-  background-color: var(--background);
+  color: var(--color-text);
+  background-color: var(--color-background);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  transition: background-color var(--transition-normal), color var(--transition-normal);
 }
 
 #app {
   min-height: 100vh;
 }
 
+/* ── Focus ── */
+
+:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* ── Reduced Motion ── */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
 /* ── Animations ── */
 
-@keyframes fadeInUp {
+@keyframes fade-in-up {
   from {
     opacity: 0;
     transform: translateY(8px);
@@ -123,12 +151,12 @@ body {
   }
 }
 
-@keyframes fadeIn {
+@keyframes fade-in {
   from { opacity: 0; }
   to { opacity: 1; }
 }
 
-@keyframes scaleIn {
+@keyframes scale-in {
   from {
     opacity: 0;
     transform: scale(0.9);

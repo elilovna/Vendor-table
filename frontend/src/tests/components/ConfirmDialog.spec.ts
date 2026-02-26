@@ -19,7 +19,7 @@ describe('ConfirmDialog', () => {
   it('emits confirm when confirm button is clicked', async () => {
     const wrapper = mount(ConfirmDialog, { props: defaultProps });
 
-    await wrapper.find('.btn-confirm').trigger('click');
+    await wrapper.find('.confirm-dialog__confirm-btn').trigger('click');
 
     expect(wrapper.emitted('confirm')).toHaveLength(1);
   });
@@ -27,7 +27,7 @@ describe('ConfirmDialog', () => {
   it('emits cancel when cancel button is clicked', async () => {
     const wrapper = mount(ConfirmDialog, { props: defaultProps });
 
-    await wrapper.find('.btn-cancel').trigger('click');
+    await wrapper.find('.confirm-dialog__cancel-btn').trigger('click');
 
     expect(wrapper.emitted('cancel')).toHaveLength(1);
   });

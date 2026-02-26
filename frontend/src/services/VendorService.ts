@@ -31,22 +31,45 @@ export const VendorService = {
       });
       
       if (!response.ok) {
-        if (response.status === 400) {
+        if (response.status === 409) {
           const errorData = await response.json();
-          if (errorData.message && errorData.message.includes('email')) {
-            throw new Error('A vendor with this email already exists. Please use a different email address.');
-          }
+          throw new Error(errorData.error);
         }
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       
       return await response.json();
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error creating vendor:', error);
       throw error;
     }
   },
   
+  async updateVendor(id: number, vendor: Vendor): Promise<Vendor> {
+    try {
+      const response = await fetch(`${API_URL}/vendors/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(vendor),
+      });
+
+      if (!response.ok) {
+        if (response.status === 409) {
+          const errorData = await response.json();
+          throw new Error(errorData.error);
+        }
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('Error updating vendor:', error);
+      throw error;
+    }
+  },
+
   async deleteVendor(id: number): Promise<void> {
     try {
       const response = await fetch(`${API_URL}/vendors/${id}`, {
@@ -62,21 +85,4 @@ export const VendorService = {
       throw error;
     }
   },
-  
-  async checkEmailExists(email: string): Promise<boolean> {
-    try {
-      const response = await fetch(`${API_URL}/vendors/check-email?email=${encodeURIComponent(email)}`);
-      
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      
-      const data = await response.json();
-      return data.exists;
-    } catch (error) {
-      console.error('Error checking email:', error);
-      // Default to allowing the email if the check fails
-      return false;
-    }
-  }
 }

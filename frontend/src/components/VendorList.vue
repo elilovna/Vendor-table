@@ -1,68 +1,65 @@
 <template>
-  <div class="vendor-card">
+  <section class="vendor-list">
     <!-- Toolbar: Search + Add Button -->
-    <div class="toolbar">
-      <div class="search-wrapper">
-        <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="11" cy="11" r="8"/>
-          <line x1="21" y1="21" x2="16.65" y2="16.65"/>
-        </svg>
+    <div class="vendor-list__toolbar">
+      <div class="vendor-list__search">
+        <SearchIcon class="vendor-list__search-icon" />
+        <label for="vendor-search" class="vendor-list__sr-only">Search vendors</label>
         <input
+          id="vendor-search"
           v-model="searchQuery"
           type="text"
-          class="search-input"
+          class="vendor-list__search-input"
           placeholder="Search vendors..."
         />
       </div>
-      <button class="btn-add" @click="$emit('addVendor')">
-        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <line x1="12" y1="5" x2="12" y2="19"/>
-          <line x1="5" y1="12" x2="19" y2="12"/>
-        </svg>
+      <button class="vendor-list__add-btn" @click="emit('addVendor')">
+        <PlusIcon />
         Add Vendor
       </button>
     </div>
 
     <!-- Loading State -->
-    <div v-if="vendorStore.loading" class="state-message">Loading vendors...</div>
+    <div v-if="vendorStore.loading" class="vendor-list__state">Loading vendors...</div>
 
     <!-- Error State -->
-    <div v-else-if="vendorStore.error" class="state-message error">{{ vendorStore.error }}</div>
+    <div v-else-if="vendorStore.error" class="vendor-list__state vendor-list__state--error">
+      {{ vendorStore.error }}
+    </div>
 
     <!-- Empty State -->
-    <div v-else-if="vendorStore.vendors.length === 0" class="state-message">
+    <div v-else-if="hasNoVendors" class="vendor-list__state">
       No vendors found. Add your first vendor!
     </div>
 
     <!-- No search results -->
-    <div v-else-if="table.getRowModel().rows.length === 0" class="state-message">
+    <div v-else-if="hasNoResults" class="vendor-list__state">
       No vendors match your search.
     </div>
 
-    <!-- Table -->
-    <table v-else class="vendors-table">
+    <table v-else class="vendor-table">
       <thead>
         <tr v-for="headerGroup in table.getHeaderGroups()" :key="headerGroup.id">
           <th
             v-for="header in headerGroup.headers"
             :key="header.id"
-            :class="{ sortable: header.column.getCanSort() }"
+            class="vendor-table__header"
+            :class="{ 'vendor-table__header--sortable': header.column.getCanSort() }"
             @click="header.column.getToggleSortingHandler()?.($event)"
           >
             <FlexRender :render="header.column.columnDef.header" :props="header.getContext()" />
-            <span v-if="header.column.getIsSorted() === 'asc'" class="sort-indicator"> &#8593;</span>
-            <span v-else-if="header.column.getIsSorted() === 'desc'" class="sort-indicator"> &#8595;</span>
+            <span v-if="header.column.getIsSorted() === 'asc'" class="vendor-table__sort-indicator"> &#8593;</span>
+            <span v-else-if="header.column.getIsSorted() === 'desc'" class="vendor-table__sort-indicator"> &#8595;</span>
           </th>
         </tr>
       </thead>
       <tbody>
         <tr
-          v-for="(row, index) in table.getRowModel().rows"
+          v-for="row in table.getRowModel().rows"
           :key="row.id"
-          class="table-row"
-          :style="{ animationDelay: `${index * 40}ms` }"
+          class="vendor-table__row"
         >
-          <td v-for="cell in row.getVisibleCells()" :key="cell.id">
+          <td v-for="cell in row.getVisibleCells()" :key="cell.id" class="vendor-table__cell">
             <FlexRender :render="cell.column.columnDef.cell" :props="cell.getContext()" />
           </td>
         </tr>
@@ -76,11 +73,11 @@
       @confirm="handleDelete"
       @cancel="showDeleteDialog = false"
     />
-  </div>
+  </section>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, h } from 'vue';
+import { ref, computed, onMounted, h } from 'vue';
 import {
   useVueTable,
   createColumnHelper,
@@ -93,10 +90,15 @@ import {
 } from '@tanstack/vue-table';
 import { useVendorStore } from '../stores/vendorStore';
 import ConfirmDialog from './ConfirmDialog.vue';
+import SearchIcon from './icons/SearchIcon.vue';
+import PlusIcon from './icons/PlusIcon.vue';
+import TrashIcon from './icons/TrashIcon.vue';
+import PencilIcon from './icons/PencilIcon.vue';
 import type { Vendor } from '../types/Vendor';
 
-defineEmits<{
+const emit = defineEmits<{
   addVendor: [];
+  editVendor: [vendor: Vendor];
 }>();
 
 const vendorStore = useVendorStore();
@@ -105,12 +107,15 @@ const vendorToDelete = ref<Vendor | null>(null);
 const sorting = ref<SortingState>([]);
 const searchQuery = ref('');
 
-function confirmDelete(vendor: Vendor) {
+const hasNoVendors = computed(() => vendorStore.vendors.length === 0);
+const hasNoResults = computed(() => table.getRowModel().rows.length === 0);
+
+function confirmDelete(vendor: Vendor): void {
   vendorToDelete.value = vendor;
   showDeleteDialog.value = true;
 }
 
-async function handleDelete() {
+async function handleDelete(): Promise<void> {
   if (vendorToDelete.value?.id) {
     try {
       await vendorStore.deleteVendor(vendorToDelete.value.id);
@@ -139,7 +144,7 @@ const columns = [
     cell: (info) => {
       const value = info.getValue();
       return h('span', {
-        class: `badge ${value === 'Partner' ? 'badge-partner' : 'badge-supplier'}`,
+        class: `badge ${value === 'Partner' ? 'badge--partner' : 'badge--supplier'}`,
       }, value);
     },
   }),
@@ -148,30 +153,26 @@ const columns = [
     header: 'Actions',
     enableSorting: false,
     cell: (info) =>
-      h(
-        'button',
-        {
-          class: 'btn-delete-icon',
-          onClick: () => confirmDelete(info.row.original),
-          title: 'Delete vendor',
-        },
-        [
-          h('svg', {
-            xmlns: 'http://www.w3.org/2000/svg',
-            width: '16',
-            height: '16',
-            viewBox: '0 0 24 24',
-            fill: 'none',
-            stroke: 'currentColor',
-            'stroke-width': '2',
-            'stroke-linecap': 'round',
-            'stroke-linejoin': 'round',
-          }, [
-            h('polyline', { points: '3 6 5 6 21 6' }),
-            h('path', { d: 'M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2' }),
-          ]),
-        ]
-      ),
+      h('div', { class: 'vendor-table__actions' }, [
+        h(
+          'button',
+          {
+            class: 'vendor-table__action-btn',
+            onClick: () => emit('editVendor', info.row.original),
+            'aria-label': `Edit ${info.row.original.name}`,
+          },
+          [h(PencilIcon)]
+        ),
+        h(
+          'button',
+          {
+            class: 'vendor-table__action-btn',
+            onClick: () => confirmDelete(info.row.original),
+            'aria-label': `Delete ${info.row.original.name}`,
+          },
+          [h(TrashIcon)]
+        ),
+      ]),
   }),
 ];
 
@@ -213,207 +214,232 @@ onMounted(() => {
 <style scoped>
 /* ── Card Container ── */
 
-.vendor-card {
-  background-color: var(--card);
-  border-radius: var(--radius);
-  border: 1px solid var(--border);
-  padding: 24px;
-  box-shadow: var(--shadow);
-  animation: fadeIn 0.3s ease;
+.vendor-list {
+  background-color: var(--color-surface);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  padding: var(--spacing-lg);
+  box-shadow: var(--shadow-sm);
+  animation: fade-in 0.3s ease;
+  transition: background-color var(--transition-normal);
+}
+
+/* ── Screen reader only ── */
+
+.vendor-list__sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
 }
 
 /* ── Toolbar ── */
 
-.toolbar {
+.vendor-list__toolbar {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  margin-bottom: 20px;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-lg);
 }
 
-.search-wrapper {
+@media (min-width: 768px) {
+  .vendor-list__toolbar {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+
+.vendor-list__search {
   position: relative;
-  max-width: 400px;
   width: 100%;
 }
 
-.search-icon {
+@media (min-width: 768px) {
+  .vendor-list__search {
+    max-width: 400px;
+  }
+}
+
+.vendor-list__search-icon {
   position: absolute;
-  left: 12px;
+  left: var(--spacing-sm);
   top: 50%;
   transform: translateY(-50%);
-  color: var(--muted);
+  color: var(--color-text-secondary);
   pointer-events: none;
 }
 
-.search-input {
+.vendor-list__search-input {
   width: 100%;
-  padding: 10px 12px 10px 40px;
-  border: 1px solid var(--input);
-  border-radius: var(--radius);
-  background-color: var(--card);
-  color: var(--foreground);
-  font-size: 14px;
-  font-family: var(--font-sans);
+  padding: 10px var(--spacing-sm) 10px 40px;
+  border: 1px solid var(--color-input);
+  border-radius: var(--radius-md);
+  background-color: var(--color-surface);
+  color: var(--color-text);
+  font-size: var(--font-size-base);
+  font-family: var(--font-family-base);
   outline: none;
-  transition: border-color 0.2s, box-shadow 0.2s;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
 }
 
-.search-input::placeholder {
-  color: var(--muted);
+.vendor-list__search-input::placeholder {
+  color: var(--color-text-secondary);
 }
 
-.search-input:focus {
-  border-color: var(--ring);
-  box-shadow: 0 0 0 3px hsl(200 98% 39% / 0.15);
+.vendor-list__search-input:focus-visible {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-focus-ring);
+  outline: none;
 }
 
-.btn-add {
+.vendor-list__add-btn {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 10px 20px;
+  gap: var(--spacing-sm);
+  padding: 10px var(--spacing-lg);
   border: none;
-  border-radius: var(--radius);
-  background-color: var(--primary);
-  color: var(--primary-foreground);
-  font-size: 14px;
+  border-radius: var(--radius-md);
+  background-color: var(--color-primary);
+  color: var(--color-primary-foreground);
+  font-size: var(--font-size-base);
   font-weight: 600;
-  font-family: var(--font-sans);
+  font-family: var(--font-family-base);
   cursor: pointer;
   white-space: nowrap;
-  transition: opacity 0.2s, transform 0.1s;
+  transition: background-color var(--transition-fast), transform 0.1s;
 }
 
-.btn-add:hover {
-  opacity: 0.9;
+.vendor-list__add-btn:hover {
+  background-color: var(--color-primary-hover);
 }
 
-.btn-add:active {
+.vendor-list__add-btn:active {
   transform: scale(0.98);
 }
 
 /* ── State Messages ── */
 
-.state-message {
-  padding: 40px 20px;
+.vendor-list__state {
+  padding: var(--spacing-2xl) var(--spacing-lg);
   text-align: center;
-  color: var(--muted);
-  font-size: 14px;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-base);
 }
 
-.state-message.error {
-  color: var(--destructive);
+.vendor-list__state--error {
+  color: var(--color-danger);
 }
 
 /* ── Table ── */
 
-.vendors-table {
+.vendor-table {
   width: 100%;
   border-collapse: collapse;
 }
 
-.vendors-table th {
-  padding: 12px 16px;
+.vendor-table__header {
+  padding: var(--spacing-sm) var(--spacing-md);
   text-align: left;
-  font-size: 13px;
+  font-size: var(--font-size-sm);
   font-weight: 600;
-  color: var(--muted);
+  color: var(--color-text-secondary);
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid var(--color-border);
   user-select: none;
 }
 
-.vendors-table th.sortable {
+.vendor-table__header--sortable {
   cursor: pointer;
 }
 
-.vendors-table th.sortable:hover {
-  color: var(--foreground);
+.vendor-table__header--sortable:hover {
+  color: var(--color-text);
 }
 
-.sort-indicator {
-  color: var(--primary);
+.vendor-table__sort-indicator {
+  color: var(--color-primary);
 }
 
-.vendors-table td {
-  padding: 16px;
-  font-size: 14px;
-  color: var(--card-foreground);
-  border-bottom: 1px solid var(--border);
+.vendor-table__cell {
+  padding: var(--spacing-md);
+  font-size: var(--font-size-base);
+  color: var(--color-text);
+  border-bottom: 1px solid var(--color-border);
   vertical-align: middle;
 }
 
-.table-row {
-  animation: fadeInUp 0.3s ease both;
-  transition: background-color 0.15s ease;
+.vendor-table__row {
+  animation: fade-in-up 0.3s ease both;
+  transition: background-color var(--transition-fast);
 }
 
-.table-row:hover {
-  background-color: var(--background);
+.vendor-table__row:hover {
+  background-color: var(--color-background);
 }
 
 /* ── Badges ── */
 
 .badge {
   display: inline-block;
-  padding: 4px 12px;
+  padding: var(--spacing-xs) var(--spacing-sm);
   border-radius: 999px;
-  font-size: 12px;
+  font-size: 0.75rem;
   font-weight: 500;
   line-height: 1.4;
 }
 
-.badge-partner {
-  background-color: var(--secondary);
-  color: var(--secondary-foreground);
+.badge--partner {
+  background-color: var(--color-secondary);
+  color: var(--color-secondary-foreground);
 }
 
-.badge-supplier {
+.badge--supplier {
   background-color: transparent;
-  color: var(--muted);
-  border: 1px solid var(--border);
+  color: var(--color-text);
+  border: 1px solid var(--color-text);
 }
 
-/* ── Delete Button ── */
 
-.btn-delete-icon {
+/* ── Responsive ── */
+
+@media (max-width: 640px) {
+  .vendor-table__header,
+  .vendor-table__cell {
+    padding: var(--spacing-sm) var(--spacing-xs);
+    font-size: var(--font-size-sm);
+  }
+}
+</style>
+
+<style>
+.vendor-table__actions {
+  display: flex;
+  gap: var(--spacing-xs);
+}
+
+.vendor-table__action-btn {
   display: flex;
   align-items: center;
   justify-content: center;
   width: 32px;
   height: 32px;
   border: none;
-  border-radius: var(--radius);
+  border-radius: var(--radius-md);
   background: transparent;
-  color: var(--muted);
+  color: var(--color-text-secondary);
   cursor: pointer;
-  transition: color 0.2s, background-color 0.2s;
+  transition: color var(--transition-fast), background-color var(--transition-fast);
 }
 
-.btn-delete-icon:hover {
-  color: var(--destructive);
+.vendor-table__action-btn:hover {
+  color: var(--color-danger);
   background-color: hsl(0 72% 50% / 0.1);
-}
-
-/* ── Responsive ── */
-
-@media (max-width: 640px) {
-  .toolbar {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .search-wrapper {
-    max-width: 100%;
-  }
-
-  .vendors-table th,
-  .vendors-table td {
-    padding: 10px 8px;
-    font-size: 13px;
-  }
 }
 </style>

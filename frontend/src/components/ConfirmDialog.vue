@@ -1,23 +1,20 @@
 <template>
   <dialog ref="dialogRef" class="confirm-dialog" @cancel.prevent="cancel">
-    <div class="dialog-icon">
-      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="12" cy="12" r="10"/>
-        <line x1="12" y1="8" x2="12" y2="12"/>
-        <line x1="12" y1="16" x2="12.01" y2="16"/>
-      </svg>
+    <div class="confirm-dialog__icon">
+      <AlertCircleIcon />
     </div>
-    <h3 class="dialog-title">{{ title }}</h3>
-    <p class="dialog-message">{{ message }}</p>
-    <div class="dialog-actions">
-      <button class="btn-cancel" @click="cancel">Cancel</button>
-      <button class="btn-confirm" @click="confirm">Delete</button>
+    <h3 class="confirm-dialog__title">{{ title }}</h3>
+    <p class="confirm-dialog__message">{{ message }}</p>
+    <div class="confirm-dialog__actions">
+      <button class="confirm-dialog__cancel-btn" @click="cancel">Cancel</button>
+      <button class="confirm-dialog__confirm-btn" @click="confirm">Delete</button>
     </div>
   </dialog>
 </template>
 
 <script setup lang="ts">
 import { ref, watch } from 'vue';
+import AlertCircleIcon from './icons/AlertCircleIcon.vue';
 
 const props = defineProps<{
   open: boolean;
@@ -40,11 +37,11 @@ watch(() => props.open, (isOpen) => {
   }
 });
 
-function confirm() {
+function confirm(): void {
   emit('confirm');
 }
 
-function cancel() {
+function cancel(): void {
   emit('cancel');
 }
 </script>
@@ -52,85 +49,85 @@ function cancel() {
 <style scoped>
 .confirm-dialog {
   border: none;
-  border-radius: var(--radius);
-  padding: 24px;
+  border-radius: var(--radius-md);
+  padding: var(--spacing-lg);
   max-width: 400px;
   width: 90%;
-  background-color: var(--card);
-  color: var(--card-foreground);
+  background-color: var(--color-surface);
+  color: var(--color-text);
   box-shadow: var(--shadow-lg);
   text-align: center;
-  animation: scaleIn 0.2s ease;
+  animation: scale-in 0.2s ease;
 }
 
 .confirm-dialog::backdrop {
   background: hsl(0 0% 0% / 0.5);
-  animation: fadeIn 0.2s ease;
+  animation: fade-in 0.2s ease;
 }
 
-.dialog-icon {
+.confirm-dialog__icon {
   display: flex;
   align-items: center;
   justify-content: center;
   width: 48px;
   height: 48px;
-  margin: 0 auto 16px;
+  margin: 0 auto var(--spacing-md);
   border-radius: 50%;
   background-color: hsl(0 72% 50% / 0.1);
-  color: var(--destructive);
+  color: var(--color-danger);
 }
 
-.dialog-title {
-  margin: 0 0 8px;
-  font-size: 16px;
+.confirm-dialog__title {
+  margin: 0 0 var(--spacing-sm);
+  font-size: var(--font-size-lg);
   font-weight: 700;
-  color: var(--foreground);
+  color: var(--color-text);
 }
 
-.dialog-message {
-  margin: 0 0 24px;
-  font-size: 14px;
-  color: var(--muted);
+.confirm-dialog__message {
+  margin: 0 0 var(--spacing-lg);
+  font-size: var(--font-size-base);
+  color: var(--color-text-secondary);
   line-height: 1.5;
 }
 
-.dialog-actions {
+.confirm-dialog__actions {
   display: flex;
   justify-content: center;
-  gap: 12px;
+  gap: var(--spacing-sm);
 }
 
-.btn-cancel {
-  padding: 10px 20px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  background-color: var(--card);
-  color: var(--foreground);
-  font-size: 14px;
+.confirm-dialog__cancel-btn {
+  padding: 10px var(--spacing-lg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background-color: var(--color-surface);
+  color: var(--color-text);
+  font-size: var(--font-size-base);
   font-weight: 500;
-  font-family: var(--font-sans);
+  font-family: var(--font-family-base);
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: background-color var(--transition-fast);
 }
 
-.btn-cancel:hover {
-  background-color: var(--background);
+.confirm-dialog__cancel-btn:hover {
+  background-color: var(--color-background);
 }
 
-.btn-confirm {
-  padding: 10px 20px;
+.confirm-dialog__confirm-btn {
+  padding: 10px var(--spacing-lg);
   border: none;
-  border-radius: var(--radius);
-  background-color: var(--destructive);
-  color: var(--destructive-foreground);
-  font-size: 14px;
+  border-radius: var(--radius-md);
+  background-color: var(--color-danger);
+  color: var(--color-danger-foreground);
+  font-size: var(--font-size-base);
   font-weight: 600;
-  font-family: var(--font-sans);
+  font-family: var(--font-family-base);
   cursor: pointer;
-  transition: opacity 0.2s;
+  transition: background-color var(--transition-fast);
 }
 
-.btn-confirm:hover {
-  opacity: 0.9;
+.confirm-dialog__confirm-btn:hover {
+  background-color: var(--color-danger-hover);
 }
 </style>

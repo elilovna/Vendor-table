@@ -31,7 +31,23 @@ export const useVendorStore = defineStore('vendor', () => {
       // Refresh the vendors list after adding a new vendor
       await fetchVendors()
     } catch (err) {
-      error.value = 'Failed to add vendor. Please try again later.'
+      error.value = err instanceof Error ? err.message : 'Failed to add vendor. Please try again later.'
+      console.error(err)
+      throw err
+    } finally {
+      loading.value = false
+    }
+  }
+
+  async function updateVendor(id: number, vendor: Vendor) {
+    loading.value = true
+    error.value = null
+
+    try {
+      await VendorService.updateVendor(id, vendor)
+      await fetchVendors()
+    } catch (err) {
+      error.value = err instanceof Error ? err.message : 'Failed to update vendor. Please try again later.'
       console.error(err)
       throw err
     } finally {
@@ -61,6 +77,7 @@ export const useVendorStore = defineStore('vendor', () => {
     error,
     fetchVendors,
     addVendor,
+    updateVendor,
     deleteVendor
   }
 })

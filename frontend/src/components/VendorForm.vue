@@ -1,54 +1,58 @@
 <template>
-  <dialog ref="dialogRef" class="vendor-form-dialog" @cancel.prevent="close">
-    <div class="dialog-header">
-      <h2 class="dialog-title">Add New Vendor</h2>
-      <button class="dialog-close" @click="close" aria-label="Close">
-        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <line x1="18" y1="6" x2="6" y2="18"/>
-          <line x1="6" y1="6" x2="18" y2="18"/>
-        </svg>
+  <dialog ref="dialogRef" class="vendor-form" @cancel.prevent="close">
+    <div class="vendor-form__header">
+      <h2 class="vendor-form__title">{{ isEditMode ? 'Edit Vendor' : 'Add New Vendor' }}</h2>
+      <button class="vendor-form__close-btn" @click="close" aria-label="Close dialog">
+        <XIcon />
       </button>
     </div>
 
-    <form @submit.prevent="submitForm">
-      <div class="form-group">
-        <label for="name">Name</label>
+    <form class="vendor-form__body" @submit.prevent="submitForm">
+      <div class="vendor-form__field">
+        <label class="vendor-form__label" for="name">Name</label>
         <input
           id="name"
           v-model="form.name"
           type="text"
+          class="vendor-form__input"
           required
           placeholder="Company name"
         />
       </div>
 
-      <div class="form-group">
-        <label for="contactPerson">Contact Person</label>
+      <div class="vendor-form__field">
+        <label class="vendor-form__label" for="contactPerson">Contact Person</label>
         <input
           id="contactPerson"
           v-model="form.contact_person"
           type="text"
+          class="vendor-form__input"
           required
           placeholder="Contact person name"
         />
       </div>
 
-      <div class="form-group">
-        <label for="email">Email</label>
+      <div class="vendor-form__field">
+        <label class="vendor-form__label" for="email">Email</label>
         <input
           id="email"
           v-model="form.email"
           type="email"
+          class="vendor-form__input"
+          :class="{ 'vendor-form__input--invalid': vendorStore.error }"
+          :aria-invalid="vendorStore.error ? 'true' : undefined"
+          :aria-describedby="vendorStore.error ? 'form-error' : undefined"
           required
           placeholder="contact@example.com"
         />
       </div>
 
-      <div class="form-group">
-        <label for="partnerType">Partner Type</label>
+      <div class="vendor-form__field">
+        <label class="vendor-form__label" for="partnerType">Partner Type</label>
         <select
           id="partnerType"
           v-model="form.partner_type"
+          class="vendor-form__input"
           required
         >
           <option value="Supplier">Supplier</option>
@@ -56,12 +60,14 @@
         </select>
       </div>
 
-      <div v-if="vendorStore.error" class="form-error">{{ vendorStore.error }}</div>
+      <div v-if="vendorStore.error" id="form-error" class="vendor-form__error" role="alert">
+        {{ vendorStore.error }}
+      </div>
 
-      <div class="form-actions">
-        <button type="button" class="btn-cancel" @click="close">Cancel</button>
-        <button type="submit" class="btn-submit" :disabled="vendorStore.loading">
-          {{ vendorStore.loading ? 'Adding...' : 'Add Vendor' }}
+      <div class="vendor-form__actions">
+        <button type="button" class="vendor-form__cancel-btn" @click="close">Cancel</button>
+        <button type="submit" class="vendor-form__submit-btn" :disabled="isBusy">
+          {{ isBusy ? (isEditMode ? 'Saving...' : 'Adding...') : (isEditMode ? 'Save Changes' : 'Add Vendor') }}
         </button>
       </div>
     </form>
@@ -69,13 +75,17 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, ref, watch } from 'vue';
+import { reactive, ref, computed, watch, nextTick } from 'vue';
 import { useVendorStore } from '../stores/vendorStore';
+import XIcon from './icons/XIcon.vue';
 import type { Vendor } from '../types/Vendor';
 
 const props = defineProps<{
   open: boolean;
+  vendor?: Vendor | null;
 }>();
+
+const isEditMode = computed(() => !!props.vendor);
 
 const emit = defineEmits<{
   close: [];
@@ -83,6 +93,9 @@ const emit = defineEmits<{
 
 const vendorStore = useVendorStore();
 const dialogRef = ref<HTMLDialogElement | null>(null);
+const isSubmitting = ref(false);
+const isBusy = computed(() => isSubmitting.value || vendorStore.loading);
+const triggerElement = ref<Element | null>(null);
 
 const form = reactive<Vendor>({
   name: '',
@@ -91,181 +104,220 @@ const form = reactive<Vendor>({
   partner_type: 'Supplier'
 });
 
+function populateForm(vendor: Vendor): void {
+  form.name = vendor.name;
+  form.contact_person = vendor.contact_person;
+  form.email = vendor.email;
+  form.partner_type = vendor.partner_type;
+}
+
+async function openDialog(): Promise<void> {
+  if (props.vendor) {
+    populateForm(props.vendor);
+  }
+  triggerElement.value = document.activeElement;
+  dialogRef.value?.showModal();
+  await nextTick();
+  dialogRef.value?.querySelector('input')?.focus();
+}
+
+function closeDialog(): void {
+  dialogRef.value?.close();
+  if (triggerElement.value instanceof HTMLElement) {
+    triggerElement.value.focus();
+  }
+}
+
 watch(() => props.open, (isOpen) => {
   if (isOpen) {
-    dialogRef.value?.showModal();
+    openDialog();
   } else {
-    dialogRef.value?.close();
+    closeDialog();
   }
 });
 
-function resetForm() {
+function resetForm(): void {
   form.name = '';
   form.contact_person = '';
   form.email = '';
   form.partner_type = 'Supplier';
 }
 
-function close() {
+function close(): void {
   resetForm();
   emit('close');
 }
 
-async function submitForm() {
+async function submitForm(): Promise<void> {
+  isSubmitting.value = true;
   try {
-    await vendorStore.addVendor({ ...form });
-    close();
+    if (isEditMode.value && props.vendor?.id) {
+      await vendorStore.updateVendor(props.vendor.id, { ...form });
+      close();
+    } else {
+      await vendorStore.addVendor({ ...form });
+      close();
+    }
   } catch {
     // Error is handled in the store
+  } finally {
+    isSubmitting.value = false;
   }
 }
 </script>
 
 <style scoped>
-.vendor-form-dialog {
+.vendor-form {
   border: none;
-  border-radius: var(--radius);
+  border-radius: var(--radius-md);
   padding: 0;
   max-width: 480px;
   width: 90%;
-  background-color: var(--card);
-  color: var(--card-foreground);
+  background-color: var(--color-surface);
+  color: var(--color-text);
   box-shadow: var(--shadow-lg);
-  animation: scaleIn 0.2s ease;
+  animation: scale-in 0.2s ease;
 }
 
-.vendor-form-dialog::backdrop {
+.vendor-form::backdrop {
   background: hsl(0 0% 0% / 0.5);
-  animation: fadeIn 0.2s ease;
+  animation: fade-in 0.2s ease;
 }
 
 /* ── Header ── */
 
-.dialog-header {
+.vendor-form__header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 20px 24px 0;
+  padding: var(--spacing-lg) var(--spacing-lg) 0;
 }
 
-.dialog-title {
-  font-size: 18px;
+.vendor-form__title {
+  font-size: var(--font-size-lg);
   font-weight: 700;
-  color: var(--foreground);
+  color: var(--color-text);
   margin: 0;
 }
 
-.dialog-close {
+.vendor-form__close-btn {
   display: flex;
   align-items: center;
   justify-content: center;
   width: 32px;
   height: 32px;
   border: none;
-  border-radius: var(--radius);
+  border-radius: var(--radius-md);
   background: transparent;
-  color: var(--muted);
+  color: var(--color-text-secondary);
   cursor: pointer;
-  transition: color 0.2s, background-color 0.2s;
+  transition: color var(--transition-fast), background-color var(--transition-fast);
 }
 
-.dialog-close:hover {
-  color: var(--foreground);
-  background-color: var(--background);
+.vendor-form__close-btn:hover {
+  color: var(--color-text);
+  background-color: var(--color-background);
 }
 
-/* ── Form ── */
+/* ── Body ── */
 
-form {
-  padding: 20px 24px 24px;
+.vendor-form__body {
+  padding: var(--spacing-lg);
 }
 
-.form-group {
-  margin-bottom: 16px;
+.vendor-form__field {
+  margin-bottom: var(--spacing-md);
 }
 
-.form-group label {
+.vendor-form__label {
   display: block;
-  margin-bottom: 6px;
-  font-size: 13px;
+  margin-bottom: var(--spacing-xs);
+  font-size: var(--font-size-sm);
   font-weight: 500;
-  color: var(--foreground);
+  color: var(--color-text);
 }
 
-.form-group input,
-.form-group select {
+.vendor-form__input {
   width: 100%;
-  padding: 10px 12px;
-  border: 1px solid var(--input);
-  border-radius: var(--radius);
-  background-color: var(--card);
-  color: var(--foreground);
-  font-size: 14px;
-  font-family: var(--font-sans);
+  padding: 10px var(--spacing-sm);
+  border: 1px solid var(--color-input);
+  border-radius: var(--radius-md);
+  background-color: var(--color-surface);
+  color: var(--color-text);
+  font-size: var(--font-size-base);
+  font-family: var(--font-family-base);
   outline: none;
-  transition: border-color 0.2s, box-shadow 0.2s;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
 }
 
-.form-group input::placeholder {
-  color: var(--muted);
+.vendor-form__input::placeholder {
+  color: var(--color-text-secondary);
 }
 
-.form-group input:focus,
-.form-group select:focus {
-  border-color: var(--ring);
-  box-shadow: 0 0 0 3px hsl(200 98% 39% / 0.15);
+.vendor-form__input:focus-visible {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-focus-ring);
+  outline: none;
 }
 
-.form-error {
-  color: var(--destructive);
-  font-size: 13px;
-  margin-bottom: 12px;
+.vendor-form__input--invalid {
+  border-color: var(--color-danger);
+}
+
+.vendor-form__input--invalid:focus-visible {
+  box-shadow: 0 0 0 3px hsl(0 72% 50% / 0.15);
+}
+
+.vendor-form__error {
+  color: var(--color-danger);
+  font-size: var(--font-size-sm);
+  margin-bottom: var(--spacing-sm);
 }
 
 /* ── Actions ── */
 
-.form-actions {
+.vendor-form__actions {
   display: flex;
   justify-content: flex-end;
-  gap: 12px;
-  margin-top: 24px;
+  gap: var(--spacing-sm);
+  margin-top: var(--spacing-lg);
 }
 
-.btn-cancel {
-  padding: 10px 20px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  background-color: var(--card);
-  color: var(--foreground);
-  font-size: 14px;
+.vendor-form__cancel-btn {
+  padding: 10px var(--spacing-lg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background-color: var(--color-surface);
+  color: var(--color-text);
+  font-size: var(--font-size-base);
   font-weight: 500;
-  font-family: var(--font-sans);
+  font-family: var(--font-family-base);
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: background-color var(--transition-fast);
 }
 
-.btn-cancel:hover {
-  background-color: var(--background);
+.vendor-form__cancel-btn:hover {
+  background-color: var(--color-background);
 }
 
-.btn-submit {
-  padding: 10px 20px;
+.vendor-form__submit-btn {
+  padding: 10px var(--spacing-lg);
   border: none;
-  border-radius: var(--radius);
-  background-color: var(--primary);
-  color: var(--primary-foreground);
-  font-size: 14px;
+  border-radius: var(--radius-md);
+  background-color: var(--color-primary);
+  color: var(--color-primary-foreground);
+  font-size: var(--font-size-base);
   font-weight: 600;
-  font-family: var(--font-sans);
+  font-family: var(--font-family-base);
   cursor: pointer;
-  transition: opacity 0.2s;
+  transition: background-color var(--transition-fast);
 }
 
-.btn-submit:hover {
-  opacity: 0.9;
+.vendor-form__submit-btn:hover {
+  background-color: var(--color-primary-hover);
 }
 
-.btn-submit:disabled {
+.vendor-form__submit-btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
