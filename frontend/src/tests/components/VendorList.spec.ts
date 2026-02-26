@@ -24,7 +24,6 @@ describe('VendorList', () => {
   ];
 
   beforeEach(() => {
-    // Reset mocks between tests
     vi.resetAllMocks();
   });
 
@@ -38,7 +37,9 @@ describe('VendorList', () => {
         ]
       }
     });
-    expect(wrapper.find('h2').text()).toBe('Vendor List');
+    expect(wrapper.find('.vendor-card').exists()).toBe(true);
+    expect(wrapper.find('.search-input').exists()).toBe(true);
+    expect(wrapper.find('.btn-add').exists()).toBe(true);
   });
 
   it('calls fetchVendors on mount', () => {
@@ -51,7 +52,7 @@ describe('VendorList', () => {
         ]
       }
     });
-    
+
     const store = useVendorStore();
     expect(store.fetchVendors).toHaveBeenCalledTimes(1);
   });
@@ -69,7 +70,7 @@ describe('VendorList', () => {
         ]
       }
     });
-    
+
     expect(wrapper.text()).toContain('Loading vendors...');
     expect(wrapper.find('.vendors-table').exists()).toBe(false);
   });
@@ -87,9 +88,9 @@ describe('VendorList', () => {
         ]
       }
     });
-    
-    expect(wrapper.find('.error').exists()).toBe(true);
-    expect(wrapper.find('.error').text()).toBe('Failed to load vendors');
+
+    expect(wrapper.find('.state-message.error').exists()).toBe(true);
+    expect(wrapper.find('.state-message.error').text()).toBe('Failed to load vendors');
     expect(wrapper.find('.vendors-table').exists()).toBe(false);
   });
 
@@ -106,8 +107,8 @@ describe('VendorList', () => {
         ]
       }
     });
-    
-    expect(wrapper.find('.no-vendors').exists()).toBe(true);
+
+    expect(wrapper.find('.state-message').exists()).toBe(true);
     expect(wrapper.text()).toContain('No vendors found');
     expect(wrapper.find('.vendors-table').exists()).toBe(false);
   });
@@ -126,18 +127,17 @@ describe('VendorList', () => {
       }
     });
 
-    // Check that the table exists and has correct structure
+    // 5 columns: Name, Contact Person, Email, Partner Type, Actions
     expect(wrapper.find('.vendors-table').exists()).toBe(true);
-    expect(wrapper.findAll('th').length).toBe(6);
+    expect(wrapper.findAll('th').length).toBe(5);
     expect(wrapper.findAll('tbody tr').length).toBe(2);
 
-    // Check content of first row
+    // Check content of first row (no ID column)
     const firstRow = wrapper.findAll('tbody tr')[0];
-    expect(firstRow.findAll('td')[0].text()).toBe('1');
-    expect(firstRow.findAll('td')[1].text()).toBe('Test Company 1');
-    expect(firstRow.findAll('td')[2].text()).toBe('John Test');
-    expect(firstRow.findAll('td')[3].text()).toBe('john@testcompany.com');
-    expect(firstRow.findAll('td')[4].text()).toBe('Supplier');
+    expect(firstRow.findAll('td')[0].text()).toBe('Test Company 1');
+    expect(firstRow.findAll('td')[1].text()).toBe('John Test');
+    expect(firstRow.findAll('td')[2].text()).toBe('john@testcompany.com');
+    expect(firstRow.findAll('td')[3].text()).toBe('Supplier');
   });
 
   it('renders a delete button for each vendor row', () => {
@@ -154,9 +154,8 @@ describe('VendorList', () => {
       }
     });
 
-    const deleteButtons = wrapper.findAll('.btn-delete');
+    const deleteButtons = wrapper.findAll('.btn-delete-icon');
     expect(deleteButtons.length).toBe(2);
-    expect(deleteButtons[0].text()).toBe('Delete');
   });
 
   it('opens confirmation dialog when delete button is clicked', async () => {
@@ -173,7 +172,7 @@ describe('VendorList', () => {
       }
     });
 
-    await wrapper.findAll('.btn-delete')[0].trigger('click');
+    await wrapper.findAll('.btn-delete-icon')[0].trigger('click');
 
     const dialog = wrapper.find('.confirm-dialog');
     expect(dialog.exists()).toBe(true);

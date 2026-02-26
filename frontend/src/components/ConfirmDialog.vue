@@ -1,7 +1,14 @@
 <template>
   <dialog ref="dialogRef" class="confirm-dialog" @cancel.prevent="cancel">
-    <h3>{{ title }}</h3>
-    <p>{{ message }}</p>
+    <div class="dialog-icon">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"/>
+        <line x1="12" y1="8" x2="12" y2="12"/>
+        <line x1="12" y1="16" x2="12.01" y2="16"/>
+      </svg>
+    </div>
+    <h3 class="dialog-title">{{ title }}</h3>
+    <p class="dialog-message">{{ message }}</p>
     <div class="dialog-actions">
       <button class="btn-cancel" @click="cancel">Cancel</button>
       <button class="btn-confirm" @click="confirm">Delete</button>
@@ -45,58 +52,85 @@ function cancel() {
 <style scoped>
 .confirm-dialog {
   border: none;
-  border-radius: 8px;
+  border-radius: var(--radius);
   padding: 24px;
   max-width: 400px;
   width: 90%;
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
+  background-color: var(--card);
+  color: var(--card-foreground);
+  box-shadow: var(--shadow-lg);
+  text-align: center;
+  animation: scaleIn 0.2s ease;
 }
 
 .confirm-dialog::backdrop {
-  background: rgba(0, 0, 0, 0.5);
+  background: hsl(0 0% 0% / 0.5);
+  animation: fadeIn 0.2s ease;
 }
 
-.confirm-dialog h3 {
-  margin: 0 0 12px;
-  color: #2c3e50;
+.dialog-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  margin: 0 auto 16px;
+  border-radius: 50%;
+  background-color: hsl(0 72% 50% / 0.1);
+  color: var(--destructive);
 }
 
-.confirm-dialog p {
+.dialog-title {
+  margin: 0 0 8px;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--foreground);
+}
+
+.dialog-message {
   margin: 0 0 24px;
-  color: #555;
+  font-size: 14px;
+  color: var(--muted);
   line-height: 1.5;
 }
 
 .dialog-actions {
   display: flex;
-  justify-content: flex-end;
+  justify-content: center;
   gap: 12px;
 }
 
 .btn-cancel {
-  padding: 8px 16px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  background: white;
-  cursor: pointer;
+  padding: 10px 20px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background-color: var(--card);
+  color: var(--foreground);
   font-size: 14px;
+  font-weight: 500;
+  font-family: var(--font-sans);
+  cursor: pointer;
+  transition: background-color 0.2s;
 }
 
 .btn-cancel:hover {
-  background: #f5f5f5;
+  background-color: var(--background);
 }
 
 .btn-confirm {
-  padding: 8px 16px;
+  padding: 10px 20px;
   border: none;
-  border-radius: 4px;
-  background-color: #e74c3c;
-  color: white;
-  cursor: pointer;
+  border-radius: var(--radius);
+  background-color: var(--destructive);
+  color: var(--destructive-foreground);
   font-size: 14px;
+  font-weight: 600;
+  font-family: var(--font-sans);
+  cursor: pointer;
+  transition: opacity 0.2s;
 }
 
 .btn-confirm:hover {
-  background-color: #c0392b;
+  opacity: 0.9;
 }
 </style>
