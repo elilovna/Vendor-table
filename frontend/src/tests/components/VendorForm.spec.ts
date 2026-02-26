@@ -6,12 +6,12 @@ import { useVendorStore } from '../../stores/vendorStore';
 
 describe('VendorForm', () => {
   beforeEach(() => {
-    // Reset mocks between tests
     vi.resetAllMocks();
   });
 
   it('renders correctly', () => {
     const wrapper = mount(VendorForm, {
+      props: { open: false },
       global: {
         plugins: [
           createTestingPinia({
@@ -23,14 +23,15 @@ describe('VendorForm', () => {
         ]
       }
     });
-    
-    expect(wrapper.find('h2').text()).toBe('Add New Vendor');
+
+    expect(wrapper.find('.dialog-title').text()).toBe('Add New Vendor');
     expect(wrapper.find('form').exists()).toBe(true);
     expect(wrapper.find('button[type="submit"]').text()).toBe('Add Vendor');
   });
 
   it('contains all required form fields', () => {
     const wrapper = mount(VendorForm, {
+      props: { open: false },
       global: {
         plugins: [
           createTestingPinia({
@@ -42,14 +43,12 @@ describe('VendorForm', () => {
         ]
       }
     });
-    
-    // Check that all expected form inputs exist
+
     expect(wrapper.find('#name').exists()).toBe(true);
     expect(wrapper.find('#contactPerson').exists()).toBe(true);
     expect(wrapper.find('#email').exists()).toBe(true);
     expect(wrapper.find('#partnerType').exists()).toBe(true);
-    
-    // Check that dropdown contains the right options
+
     const options = wrapper.findAll('#partnerType option');
     expect(options.length).toBe(2);
     expect(options[0].text()).toBe('Supplier');
@@ -58,6 +57,7 @@ describe('VendorForm', () => {
 
   it('submits form data correctly', async () => {
     const wrapper = mount(VendorForm, {
+      props: { open: false },
       global: {
         plugins: [
           createTestingPinia({
@@ -69,19 +69,16 @@ describe('VendorForm', () => {
         ]
       }
     });
-    
+
     const store = useVendorStore();
-    
-    // Fill out the form
+
     await wrapper.find('#name').setValue('Test Company');
     await wrapper.find('#contactPerson').setValue('John Test');
     await wrapper.find('#email').setValue('john@testcompany.com');
     await wrapper.find('#partnerType').setValue('Partner');
-    
-    // Submit the form
+
     await wrapper.find('form').trigger('submit');
-    
-    // Check that the store's addVendor method was called with correct data
+
     expect(store.addVendor).toHaveBeenCalledWith({
       name: 'Test Company',
       contact_person: 'John Test',
@@ -92,6 +89,7 @@ describe('VendorForm', () => {
 
   it('shows loading state when submitting', async () => {
     const wrapper = mount(VendorForm, {
+      props: { open: false },
       global: {
         plugins: [
           createTestingPinia({
@@ -103,14 +101,14 @@ describe('VendorForm', () => {
         ]
       }
     });
-    
-    // Check that the submit button shows loading text
-    expect(wrapper.find('button[type="submit"]').text()).toBe('Submitting...');
+
+    expect(wrapper.find('button[type="submit"]').text()).toBe('Adding...');
     expect(wrapper.find('button[type="submit"]').attributes('disabled')).toBeDefined();
   });
 
   it('shows error message when submission fails', async () => {
     const wrapper = mount(VendorForm, {
+      props: { open: false },
       global: {
         plugins: [
           createTestingPinia({
@@ -122,9 +120,8 @@ describe('VendorForm', () => {
         ]
       }
     });
-    
-    // Check that error message is shown
-    expect(wrapper.find('.error-message').exists()).toBe(true);
-    expect(wrapper.find('.error-message').text()).toBe('Failed to add vendor');
+
+    expect(wrapper.find('.form-error').exists()).toBe(true);
+    expect(wrapper.find('.form-error').text()).toBe('Failed to add vendor');
   });
 });
