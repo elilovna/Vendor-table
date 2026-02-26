@@ -24,7 +24,7 @@ describe('VendorForm', () => {
       }
     });
 
-    expect(wrapper.find('.dialog-title').text()).toBe('Add New Vendor');
+    expect(wrapper.find('.vendor-form__title').text()).toBe('Add New Vendor');
     expect(wrapper.find('form').exists()).toBe(true);
     expect(wrapper.find('button[type="submit"]').text()).toBe('Add Vendor');
   });
@@ -121,7 +121,7 @@ describe('VendorForm', () => {
       }
     });
 
-    expect(wrapper.find('.form-error').exists()).toBe(true);
-    expect(wrapper.find('.form-error').text()).toBe('Failed to add vendor');
+    expect(wrapper.find('.vendor-form__error').exists()).toBe(true);
+    expect(wrapper.find('.vendor-form__error').text()).toBe('Failed to add vendor');
   });
 });

@@ -37,9 +37,9 @@ describe('VendorList', () => {
         ]
       }
     });
-    expect(wrapper.find('.vendor-card').exists()).toBe(true);
-    expect(wrapper.find('.search-input').exists()).toBe(true);
-    expect(wrapper.find('.btn-add').exists()).toBe(true);
+    expect(wrapper.find('.vendor-list').exists()).toBe(true);
+    expect(wrapper.find('.vendor-list__search-input').exists()).toBe(true);
+    expect(wrapper.find('.vendor-list__add-btn').exists()).toBe(true);
   });
 
   it('calls fetchVendors on mount', () => {
@@ -72,7 +72,7 @@ describe('VendorList', () => {
     });
 
     expect(wrapper.text()).toContain('Loading vendors...');
-    expect(wrapper.find('.vendors-table').exists()).toBe(false);
+    expect(wrapper.find('.vendor-table').exists()).toBe(false);
   });
 
   it('displays error message when there is an error', () => {
@@ -89,9 +89,9 @@ describe('VendorList', () => {
       }
     });
 
-    expect(wrapper.find('.state-message.error').exists()).toBe(true);
-    expect(wrapper.find('.state-message.error').text()).toBe('Failed to load vendors');
-    expect(wrapper.find('.vendors-table').exists()).toBe(false);
+    expect(wrapper.find('.vendor-list__state--error').exists()).toBe(true);
+    expect(wrapper.find('.vendor-list__state--error').text()).toBe('Failed to load vendors');
+    expect(wrapper.find('.vendor-table').exists()).toBe(false);
   });
 
   it('displays "no vendors" message when vendor list is empty', () => {
@@ -108,9 +108,9 @@ describe('VendorList', () => {
       }
     });
 
-    expect(wrapper.find('.state-message').exists()).toBe(true);
+    expect(wrapper.find('.vendor-list__state').exists()).toBe(true);
     expect(wrapper.text()).toContain('No vendors found');
-    expect(wrapper.find('.vendors-table').exists()).toBe(false);
+    expect(wrapper.find('.vendor-table').exists()).toBe(false);
   });
 
   it('displays vendor table with correct data when vendors are available', () => {
@@ -128,7 +128,7 @@ describe('VendorList', () => {
     });
 
     // 5 columns: Name, Contact Person, Email, Partner Type, Actions
-    expect(wrapper.find('.vendors-table').exists()).toBe(true);
+    expect(wrapper.find('.vendor-table').exists()).toBe(true);
     expect(wrapper.findAll('th').length).toBe(5);
     expect(wrapper.findAll('tbody tr').length).toBe(2);
 
@@ -154,7 +154,7 @@ describe('VendorList', () => {
       }
     });
 
-    const deleteButtons = wrapper.findAll('.btn-delete-icon');
+    const deleteButtons = wrapper.findAll('.vendor-table__delete-btn');
     expect(deleteButtons.length).toBe(2);
   });
 
@@ -172,7 +172,7 @@ describe('VendorList', () => {
       }
     });
 
-    await wrapper.findAll('.btn-delete-icon')[0].trigger('click');
+    await wrapper.findAll('.vendor-table__delete-btn')[0].trigger('click');
 
     const dialog = wrapper.find('.confirm-dialog');
     expect(dialog.exists()).toBe(true);
