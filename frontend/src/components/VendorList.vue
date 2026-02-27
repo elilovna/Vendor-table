@@ -13,7 +13,7 @@
           placeholder="Search vendors..."
         />
       </div>
-      <button class="vendor-list__add-btn" @click="emit('addVendor')">
+      <button class="btn btn--primary vendor-list__add-btn" @click="emit('addVendor')">
         <PlusIcon />
         Add Vendor
       </button>
@@ -44,7 +44,10 @@
             v-for="header in headerGroup.headers"
             :key="header.id"
             class="vendor-table__header"
-            :class="{ 'vendor-table__header--sortable': header.column.getCanSort() }"
+            :class="[
+              header.column.getCanSort() ? 'vendor-table__header--sortable' : '',
+              (header.column.columnDef.meta as Record<string, string>)?.class ?? '',
+            ]"
             @click="header.column.getToggleSortingHandler()?.($event)"
           >
             <FlexRender :render="header.column.columnDef.header" :props="header.getContext()" />
@@ -59,12 +62,61 @@
           :key="row.id"
           class="vendor-table__row"
         >
-          <td v-for="cell in row.getVisibleCells()" :key="cell.id" class="vendor-table__cell">
+          <td
+            v-for="cell in row.getVisibleCells()"
+            :key="cell.id"
+            class="vendor-table__cell"
+            :class="(cell.column.columnDef.meta as Record<string, string>)?.class ?? ''"
+          >
             <FlexRender :render="cell.column.columnDef.cell" :props="cell.getContext()" />
           </td>
         </tr>
       </tbody>
     </table>
+
+    <!-- Mobile Detail Panel -->
+    <Teleport to="body">
+      <div v-if="selectedVendor" class="vendor-detail-overlay" @click.self="closeDetail">
+        <aside class="vendor-detail" role="dialog" aria-label="Vendor details">
+          <div class="vendor-detail__header">
+            <h3 class="vendor-detail__title">{{ selectedVendor.name }}</h3>
+            <button class="btn btn--icon btn--icon-neutral" aria-label="Close details" @click="closeDetail">
+              <XIcon />
+            </button>
+          </div>
+
+          <dl class="vendor-detail__fields">
+            <div class="vendor-detail__field">
+              <dt class="vendor-detail__label">Contact Person</dt>
+              <dd class="vendor-detail__value">{{ selectedVendor.contact_person }}</dd>
+            </div>
+            <div class="vendor-detail__field">
+              <dt class="vendor-detail__label">Email</dt>
+              <dd class="vendor-detail__value">{{ selectedVendor.email }}</dd>
+            </div>
+            <div class="vendor-detail__field">
+              <dt class="vendor-detail__label">Partner Type</dt>
+              <dd class="vendor-detail__value">
+                <span :class="`badge ${selectedVendor.partner_type === 'Partner' ? 'badge--partner' : 'badge--supplier'}`">
+                  {{ selectedVendor.partner_type }}
+                </span>
+              </dd>
+            </div>
+          </dl>
+
+          <div class="vendor-detail__actions">
+            <button class="btn btn--outline vendor-detail__btn" @click="emit('editVendor', selectedVendor!); closeDetail()">
+              <PencilIcon />
+              Edit
+            </button>
+            <button class="btn btn--danger vendor-detail__btn" @click="confirmDelete(selectedVendor!); closeDetail()">
+              <TrashIcon />
+              Delete
+            </button>
+          </div>
+        </aside>
+      </div>
+    </Teleport>
 
     <ConfirmDialog
       title="Delete Vendor"
@@ -94,6 +146,8 @@ import SearchIcon from './icons/SearchIcon.vue';
 import PlusIcon from './icons/PlusIcon.vue';
 import TrashIcon from './icons/TrashIcon.vue';
 import PencilIcon from './icons/PencilIcon.vue';
+import EyeIcon from './icons/EyeIcon.vue';
+import XIcon from './icons/XIcon.vue';
 import type { Vendor } from '../types/Vendor';
 
 const emit = defineEmits<{
@@ -107,8 +161,18 @@ const vendorToDelete = ref<Vendor | null>(null);
 const sorting = ref<SortingState>([]);
 const searchQuery = ref('');
 
+const selectedVendor = ref<Vendor | null>(null);
+
 const hasNoVendors = computed(() => vendorStore.vendors.length === 0);
 const hasNoResults = computed(() => table.getRowModel().rows.length === 0);
+
+function openDetail(vendor: Vendor): void {
+  selectedVendor.value = vendor;
+}
+
+function closeDetail(): void {
+  selectedVendor.value = null;
+}
 
 function confirmDelete(vendor: Vendor): void {
   vendorToDelete.value = vendor;
@@ -135,12 +199,14 @@ const columns = [
   }),
   columnHelper.accessor('contact_person', {
     header: 'Contact Person',
+    meta: { class: 'vendor-table__col--contact' },
   }),
   columnHelper.accessor('email', {
     header: 'Email',
   }),
   columnHelper.accessor('partner_type', {
     header: 'Partner Type',
+    meta: { class: 'vendor-table__col--type' },
     cell: (info) => {
       const value = info.getValue();
       return h('span', {
@@ -152,12 +218,13 @@ const columns = [
     id: 'actions',
     header: 'Actions',
     enableSorting: false,
+    meta: { class: 'vendor-table__col--actions' },
     cell: (info) =>
       h('div', { class: 'vendor-table__actions' }, [
         h(
           'button',
           {
-            class: 'vendor-table__action-btn',
+            class: 'btn btn--icon',
             onClick: () => emit('editVendor', info.row.original),
             'aria-label': `Edit ${info.row.original.name}`,
           },
@@ -166,13 +233,29 @@ const columns = [
         h(
           'button',
           {
-            class: 'vendor-table__action-btn',
+            class: 'btn btn--icon',
             onClick: () => confirmDelete(info.row.original),
             'aria-label': `Delete ${info.row.original.name}`,
           },
           [h(TrashIcon)]
         ),
       ]),
+  }),
+  columnHelper.display({
+    id: 'view',
+    header: '',
+    enableSorting: false,
+    meta: { class: 'vendor-table__col--view' },
+    cell: (info) =>
+      h(
+        'button',
+        {
+          class: 'btn btn--icon',
+          onClick: () => openDetail(info.row.original),
+          'aria-label': `View details for ${info.row.original.name}`,
+        },
+        [h(EyeIcon)]
+      ),
   }),
 ];
 
@@ -299,24 +382,7 @@ onMounted(() => {
 }
 
 .vendor-list__add-btn {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-sm);
-  padding: 10px var(--spacing-lg);
-  border: none;
-  border-radius: var(--radius-md);
-  background-color: var(--color-primary);
-  color: var(--color-primary-foreground);
-  font-size: var(--font-size-base);
-  font-weight: 600;
-  font-family: var(--font-family-base);
-  cursor: pointer;
   white-space: nowrap;
-  transition: background-color var(--transition-fast), transform 0.1s;
-}
-
-.vendor-list__add-btn:hover {
-  background-color: var(--color-primary-hover);
 }
 
 .vendor-list__add-btn:active {
@@ -384,38 +450,6 @@ onMounted(() => {
   background-color: var(--color-background);
 }
 
-/* ── Badges ── */
-
-.badge {
-  display: inline-block;
-  padding: var(--spacing-xs) var(--spacing-sm);
-  border-radius: 999px;
-  font-size: 0.75rem;
-  font-weight: 500;
-  line-height: 1.4;
-}
-
-.badge--partner {
-  background-color: var(--color-secondary);
-  color: var(--color-secondary-foreground);
-}
-
-.badge--supplier {
-  background-color: transparent;
-  color: var(--color-text);
-  border: 1px solid var(--color-text);
-}
-
-
-/* ── Responsive ── */
-
-@media (max-width: 640px) {
-  .vendor-table__header,
-  .vendor-table__cell {
-    padding: var(--spacing-sm) var(--spacing-xs);
-    font-size: var(--font-size-sm);
-  }
-}
 </style>
 
 <style>
@@ -424,22 +458,96 @@ onMounted(() => {
   gap: var(--spacing-xs);
 }
 
-.vendor-table__action-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 32px;
-  height: 32px;
-  border: none;
-  border-radius: var(--radius-md);
-  background: transparent;
-  color: var(--color-text-secondary);
-  cursor: pointer;
-  transition: color var(--transition-fast), background-color var(--transition-fast);
+/* ── Mobile Detail Panel ── */
+
+.vendor-detail-overlay {
+  position: fixed;
+  inset: 0;
+  background: hsl(0 0% 0% / 0.5);
+  z-index: 100;
+  animation: fade-in 0.2s ease;
 }
 
-.vendor-table__action-btn:hover {
-  color: var(--color-danger);
-  background-color: hsl(0 72% 50% / 0.1);
+.vendor-detail {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  max-height: 70vh;
+  overflow-y: auto;
+  background-color: var(--color-surface);
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
+  box-shadow: var(--shadow-lg);
+  padding: var(--spacing-lg);
+  animation: slide-up 0.25s ease;
+}
+
+.vendor-detail__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--spacing-lg);
+}
+
+.vendor-detail__title {
+  font-size: var(--font-size-lg);
+  font-weight: 700;
+  color: var(--color-text);
+  margin: 0;
+}
+
+.vendor-detail__fields {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  margin: 0;
+}
+
+.vendor-detail__field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.vendor-detail__label {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.vendor-detail__value {
+  font-size: var(--font-size-base);
+  color: var(--color-text);
+  margin: 0;
+}
+
+.vendor-detail__actions {
+  display: flex;
+  gap: var(--spacing-sm);
+  margin-top: var(--spacing-lg);
+}
+
+.vendor-detail__btn {
+  flex: 1;
+}
+
+/* ── Column Visibility ── */
+
+.vendor-table__col--view {
+  display: none;
+}
+
+@media (max-width: 767px) {
+  .vendor-table__col--contact,
+  .vendor-table__col--type,
+  .vendor-table__col--actions {
+    display: none;
+  }
+
+  .vendor-table__col--view {
+    display: table-cell;
+  }
 }
 </style>

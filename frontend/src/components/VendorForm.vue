@@ -2,7 +2,7 @@
   <dialog ref="dialogRef" class="vendor-form" @cancel.prevent="close">
     <div class="vendor-form__header">
       <h2 class="vendor-form__title">{{ isEditMode ? 'Edit Vendor' : 'Add New Vendor' }}</h2>
-      <button class="vendor-form__close-btn" @click="close" aria-label="Close dialog">
+      <button class="btn btn--icon btn--icon-neutral" @click="close" aria-label="Close dialog">
         <XIcon />
       </button>
     </div>
@@ -65,8 +65,8 @@
       </div>
 
       <div class="vendor-form__actions">
-        <button type="button" class="vendor-form__cancel-btn" @click="close">Cancel</button>
-        <button type="submit" class="vendor-form__submit-btn" :disabled="isBusy">
+        <button type="button" class="btn btn--outline" @click="close">Cancel</button>
+        <button type="submit" class="btn btn--primary" :disabled="isBusy">
           {{ isBusy ? (isEditMode ? 'Saving...' : 'Adding...') : (isEditMode ? 'Save Changes' : 'Add Vendor') }}
         </button>
       </div>
@@ -200,25 +200,6 @@ async function submitForm(): Promise<void> {
   margin: 0;
 }
 
-.vendor-form__close-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 32px;
-  height: 32px;
-  border: none;
-  border-radius: var(--radius-md);
-  background: transparent;
-  color: var(--color-text-secondary);
-  cursor: pointer;
-  transition: color var(--transition-fast), background-color var(--transition-fast);
-}
-
-.vendor-form__close-btn:hover {
-  color: var(--color-text);
-  background-color: var(--color-background);
-}
-
 /* ── Body ── */
 
 .vendor-form__body {
@@ -283,42 +264,18 @@ async function submitForm(): Promise<void> {
   margin-top: var(--spacing-lg);
 }
 
-.vendor-form__cancel-btn {
-  padding: 10px var(--spacing-lg);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  background-color: var(--color-surface);
-  color: var(--color-text);
-  font-size: var(--font-size-base);
-  font-weight: 500;
-  font-family: var(--font-family-base);
-  cursor: pointer;
-  transition: background-color var(--transition-fast);
-}
+/* ── Mobile: bottom sheet ── */
 
-.vendor-form__cancel-btn:hover {
-  background-color: var(--color-background);
-}
-
-.vendor-form__submit-btn {
-  padding: 10px var(--spacing-lg);
-  border: none;
-  border-radius: var(--radius-md);
-  background-color: var(--color-primary);
-  color: var(--color-primary-foreground);
-  font-size: var(--font-size-base);
-  font-weight: 600;
-  font-family: var(--font-family-base);
-  cursor: pointer;
-  transition: background-color var(--transition-fast);
-}
-
-.vendor-form__submit-btn:hover {
-  background-color: var(--color-primary-hover);
-}
-
-.vendor-form__submit-btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
+@media (max-width: 767px) {
+  .vendor-form {
+    inset: auto 0 0 0;
+    margin: auto 0 0 0;
+    max-width: 100%;
+    width: 100%;
+    max-height: 85vh;
+    overflow-y: auto;
+    border-radius: var(--radius-md) var(--radius-md) 0 0;
+    animation: slide-up 0.25s ease;
+  }
 }
 </style>
