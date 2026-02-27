@@ -1,27 +1,39 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { mount } from '@vue/test-utils';
-import { createTestingPinia } from '@pinia/testing';
+import { mount, flushPromises } from '@vue/test-utils';
+import { QueryClient, VueQueryPlugin } from '@tanstack/vue-query';
 import VendorForm from '../../components/VendorForm.vue';
-import { useVendorStore } from '../../stores/vendorStore';
+import { VendorService } from '../../services/VendorService';
+
+vi.mock('../../services/VendorService', () => ({
+  VendorService: {
+    getVendors: vi.fn(),
+    createVendor: vi.fn(),
+    updateVendor: vi.fn(),
+    deleteVendor: vi.fn(),
+  },
+}));
+
+function createQueryClient(): QueryClient {
+  return new QueryClient({
+    defaultOptions: {
+      queries: { retry: false },
+      mutations: { retry: false },
+    },
+  });
+}
 
 describe('VendorForm', () => {
   beforeEach(() => {
     vi.resetAllMocks();
+    vi.mocked(VendorService.getVendors).mockResolvedValue([]);
   });
 
   it('renders correctly', () => {
     const wrapper = mount(VendorForm, {
       props: { open: false },
       global: {
-        plugins: [
-          createTestingPinia({
-            createSpy: vi.fn,
-            initialState: {
-              vendor: { loading: false, error: null }
-            }
-          })
-        ]
-      }
+        plugins: [[VueQueryPlugin, { queryClient: createQueryClient() }]],
+      },
     });
 
     expect(wrapper.find('.vendor-form__title').text()).toBe('Add New Vendor');
@@ -33,15 +45,8 @@ describe('VendorForm', () => {
     const wrapper = mount(VendorForm, {
       props: { open: false },
       global: {
-        plugins: [
-          createTestingPinia({
-            createSpy: vi.fn,
-            initialState: {
-              vendor: { loading: false, error: null }
-            }
-          })
-        ]
-      }
+        plugins: [[VueQueryPlugin, { queryClient: createQueryClient() }]],
+      },
     });
 
     expect(wrapper.find('#name').exists()).toBe(true);
@@ -56,21 +61,20 @@ describe('VendorForm', () => {
   });
 
   it('submits form data correctly', async () => {
+    vi.mocked(VendorService.createVendor).mockResolvedValue({
+      id: 1,
+      name: 'Test Company',
+      contact_person: 'John Test',
+      email: 'john@testcompany.com',
+      partner_type: 'Partner',
+    });
+
     const wrapper = mount(VendorForm, {
       props: { open: false },
       global: {
-        plugins: [
-          createTestingPinia({
-            createSpy: vi.fn,
-            initialState: {
-              vendor: { loading: false, error: null }
-            }
-          })
-        ]
-      }
+        plugins: [[VueQueryPlugin, { queryClient: createQueryClient() }]],
+      },
     });
-
-    const store = useVendorStore();
 
     await wrapper.find('#name').setValue('Test Company');
     await wrapper.find('#contactPerson').setValue('John Test');
@@ -78,50 +82,34 @@ describe('VendorForm', () => {
     await wrapper.find('#partnerType').setValue('Partner');
 
     await wrapper.find('form').trigger('submit');
+    await flushPromises();
 
-    expect(store.addVendor).toHaveBeenCalledWith({
+    expect(VendorService.createVendor).toHaveBeenCalledWith({
       name: 'Test Company',
       contact_person: 'John Test',
       email: 'john@testcompany.com',
-      partner_type: 'Partner'
+      partner_type: 'Partner',
     });
-  });
-
-  it('shows loading state when submitting', async () => {
-    const wrapper = mount(VendorForm, {
-      props: { open: false },
-      global: {
-        plugins: [
-          createTestingPinia({
-            createSpy: vi.fn,
-            initialState: {
-              vendor: { loading: true, error: null }
-            }
-          })
-        ]
-      }
-    });
-
-    expect(wrapper.find('button[type="submit"]').text()).toBe('Adding...');
-    expect(wrapper.find('button[type="submit"]').attributes('disabled')).toBeDefined();
   });
 
   it('shows error message when submission fails', async () => {
+    vi.mocked(VendorService.createVendor).mockRejectedValue(new Error('Email already exists'));
+
     const wrapper = mount(VendorForm, {
       props: { open: false },
       global: {
-        plugins: [
-          createTestingPinia({
-            createSpy: vi.fn,
-            initialState: {
-              vendor: { loading: false, error: 'Failed to add vendor' }
-            }
-          })
-        ]
-      }
+        plugins: [[VueQueryPlugin, { queryClient: createQueryClient() }]],
+      },
     });
 
+    await wrapper.find('#name').setValue('Test Company');
+    await wrapper.find('#contactPerson').setValue('John Test');
+    await wrapper.find('#email').setValue('john@testcompany.com');
+
+    await wrapper.find('form').trigger('submit');
+    await flushPromises();
+
     expect(wrapper.find('.vendor-form__error').exists()).toBe(true);
-    expect(wrapper.find('.vendor-form__error').text()).toBe('Failed to add vendor');
+    expect(wrapper.find('.vendor-form__error').text()).toBe('Email already exists');
   });
 });

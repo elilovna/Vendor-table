@@ -7,61 +7,75 @@
       </button>
     </div>
 
-    <form class="vendor-form__body" @submit.prevent="submitForm">
+    <form class="vendor-form__body" @submit="onSubmit">
       <div class="vendor-form__field">
         <label class="vendor-form__label" for="name">Name</label>
         <input
           id="name"
-          v-model="form.name"
+          v-model="name"
           type="text"
           class="vendor-form__input"
-          required
+          :class="{ 'vendor-form__input--invalid': nameError }"
+          :aria-invalid="nameError ? 'true' : undefined"
+          :aria-describedby="nameError ? 'name-error' : undefined"
           placeholder="Company name"
+          @blur="() => validateName()"
         />
+        <span v-if="nameError" :id="'name-error'" class="vendor-form__field-error" role="alert">
+          {{ nameError }}
+        </span>
       </div>
 
       <div class="vendor-form__field">
         <label class="vendor-form__label" for="contactPerson">Contact Person</label>
         <input
           id="contactPerson"
-          v-model="form.contact_person"
+          v-model="contactPerson"
           type="text"
           class="vendor-form__input"
-          required
+          :class="{ 'vendor-form__input--invalid': contactPersonError }"
+          :aria-invalid="contactPersonError ? 'true' : undefined"
+          :aria-describedby="contactPersonError ? 'contact-error' : undefined"
           placeholder="Contact person name"
+          @blur="() => validateContactPerson()"
         />
+        <span v-if="contactPersonError" :id="'contact-error'" class="vendor-form__field-error" role="alert">
+          {{ contactPersonError }}
+        </span>
       </div>
 
       <div class="vendor-form__field">
         <label class="vendor-form__label" for="email">Email</label>
         <input
           id="email"
-          v-model="form.email"
+          v-model="email"
           type="email"
           class="vendor-form__input"
-          :class="{ 'vendor-form__input--invalid': vendorStore.error }"
-          :aria-invalid="vendorStore.error ? 'true' : undefined"
-          :aria-describedby="vendorStore.error ? 'form-error' : undefined"
-          required
+          :class="{ 'vendor-form__input--invalid': emailError || mutationError }"
+          :aria-invalid="emailError || mutationError ? 'true' : undefined"
+          :aria-describedby="emailError ? 'email-error' : mutationError ? 'form-error' : undefined"
           placeholder="contact@example.com"
+          @blur="() => validateEmail()"
         />
+        <span v-if="emailError" :id="'email-error'" class="vendor-form__field-error" role="alert">
+          {{ emailError }}
+        </span>
       </div>
 
       <div class="vendor-form__field">
         <label class="vendor-form__label" for="partnerType">Partner Type</label>
         <select
           id="partnerType"
-          v-model="form.partner_type"
+          v-model="partnerType"
           class="vendor-form__input"
-          required
         >
           <option value="Supplier">Supplier</option>
           <option value="Partner">Partner</option>
         </select>
       </div>
 
-      <div v-if="vendorStore.error" id="form-error" class="vendor-form__error" role="alert">
-        {{ vendorStore.error }}
+      <div v-if="mutationError" id="form-error" class="vendor-form__error" role="alert">
+        {{ mutationError }}
       </div>
 
       <div class="vendor-form__actions">
@@ -75,8 +89,9 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, ref, computed, watch, nextTick } from 'vue';
-import { useVendorStore } from '../stores/vendorStore';
+import { ref, computed, watch, nextTick } from 'vue';
+import { useForm, useField } from 'vee-validate';
+import { useVendors } from '../composables/useVendors';
 import XIcon from './icons/XIcon.vue';
 import type { Vendor } from '../types/Vendor';
 
@@ -91,29 +106,61 @@ const emit = defineEmits<{
   close: [];
 }>();
 
-const vendorStore = useVendorStore();
+const { createVendor, updateVendor } = useVendors();
 const dialogRef = ref<HTMLDialogElement | null>(null);
 const isSubmitting = ref(false);
-const isBusy = computed(() => isSubmitting.value || vendorStore.loading);
+const isBusy = computed(() => isSubmitting.value || createVendor.isPending.value || updateVendor.isPending.value);
+const mutationError = computed(() => createVendor.error.value?.message ?? updateVendor.error.value?.message ?? null);
 const triggerElement = ref<Element | null>(null);
 
-const form = reactive<Vendor>({
-  name: '',
-  contact_person: '',
-  email: '',
-  partner_type: 'Supplier'
-});
-
-function populateForm(vendor: Vendor): void {
-  form.name = vendor.name;
-  form.contact_person = vendor.contact_person;
-  form.email = vendor.email;
-  form.partner_type = vendor.partner_type;
+function requiredValidator(value: unknown): string | true {
+  if (!value || (typeof value === 'string' && value.trim().length === 0)) {
+    return 'This field is required';
+  }
+  return true;
 }
 
+function emailValidator(value: unknown): string | true {
+  if (!value || (typeof value === 'string' && value.trim().length === 0)) {
+    return 'Email is required';
+  }
+  if (typeof value === 'string' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+    return 'Please enter a valid email address';
+  }
+  return true;
+}
+
+interface VendorFormValues {
+  name: string;
+  contact_person: string;
+  email: string;
+  partner_type: 'Supplier' | 'Partner';
+}
+
+const { handleSubmit, resetForm, setValues } = useForm<VendorFormValues>({
+  initialValues: {
+    name: '',
+    contact_person: '',
+    email: '',
+    partner_type: 'Supplier',
+  },
+});
+
+const { value: name, errorMessage: nameError, validate: validateName } = useField<string>('name', requiredValidator);
+const { value: contactPerson, errorMessage: contactPersonError, validate: validateContactPerson } = useField<string>('contact_person', requiredValidator);
+const { value: email, errorMessage: emailError, validate: validateEmail } = useField<string>('email', emailValidator);
+const { value: partnerType } = useField<'Supplier' | 'Partner'>('partner_type');
+
 async function openDialog(): Promise<void> {
+  createVendor.reset();
+  updateVendor.reset();
   if (props.vendor) {
-    populateForm(props.vendor);
+    setValues({
+      name: props.vendor.name,
+      contact_person: props.vendor.contact_person,
+      email: props.vendor.email,
+      partner_type: props.vendor.partner_type,
+    });
   }
   triggerElement.value = document.activeElement;
   dialogRef.value?.showModal();
@@ -136,34 +183,32 @@ watch(() => props.open, (isOpen) => {
   }
 });
 
-function resetForm(): void {
-  form.name = '';
-  form.contact_person = '';
-  form.email = '';
-  form.partner_type = 'Supplier';
-}
-
 function close(): void {
   resetForm();
   emit('close');
 }
 
-async function submitForm(): Promise<void> {
+const onSubmit = handleSubmit(async (values) => {
   isSubmitting.value = true;
   try {
+    const vendor: Vendor = {
+      name: values.name,
+      contact_person: values.contact_person,
+      email: values.email,
+      partner_type: values.partner_type,
+    };
     if (isEditMode.value && props.vendor?.id) {
-      await vendorStore.updateVendor(props.vendor.id, { ...form });
-      close();
+      await updateVendor.mutateAsync({ id: props.vendor.id, vendor });
     } else {
-      await vendorStore.addVendor({ ...form });
-      close();
+      await createVendor.mutateAsync(vendor);
     }
+    close();
   } catch {
-    // Error is handled in the store
+    // Error is handled by TanStack Query mutation
   } finally {
     isSubmitting.value = false;
   }
-}
+});
 </script>
 
 <style scoped>
@@ -247,6 +292,13 @@ async function submitForm(): Promise<void> {
 
 .vendor-form__input--invalid:focus-visible {
   box-shadow: 0 0 0 3px hsl(0 72% 50% / 0.15);
+}
+
+.vendor-form__field-error {
+  display: block;
+  color: var(--color-danger);
+  font-size: var(--font-size-sm);
+  margin-top: var(--spacing-xs);
 }
 
 .vendor-form__error {
