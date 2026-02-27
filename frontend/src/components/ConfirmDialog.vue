@@ -6,8 +6,8 @@
     <h3 class="confirm-dialog__title">{{ title }}</h3>
     <p class="confirm-dialog__message">{{ message }}</p>
     <div class="confirm-dialog__actions">
-      <button class="confirm-dialog__cancel-btn" @click="cancel">Cancel</button>
-      <button class="confirm-dialog__confirm-btn" @click="confirm">Delete</button>
+      <button class="btn btn--outline" @click="cancel">Cancel</button>
+      <button class="btn btn--danger" @click="confirm">Delete</button>
     </div>
   </dialog>
 </template>
@@ -97,37 +97,16 @@ function cancel(): void {
   gap: var(--spacing-sm);
 }
 
-.confirm-dialog__cancel-btn {
-  padding: 10px var(--spacing-lg);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  background-color: var(--color-surface);
-  color: var(--color-text);
-  font-size: var(--font-size-base);
-  font-weight: 500;
-  font-family: var(--font-family-base);
-  cursor: pointer;
-  transition: background-color var(--transition-fast);
-}
+/* ── Mobile: bottom sheet ── */
 
-.confirm-dialog__cancel-btn:hover {
-  background-color: var(--color-background);
-}
-
-.confirm-dialog__confirm-btn {
-  padding: 10px var(--spacing-lg);
-  border: none;
-  border-radius: var(--radius-md);
-  background-color: var(--color-danger);
-  color: var(--color-danger-foreground);
-  font-size: var(--font-size-base);
-  font-weight: 600;
-  font-family: var(--font-family-base);
-  cursor: pointer;
-  transition: background-color var(--transition-fast);
-}
-
-.confirm-dialog__confirm-btn:hover {
-  background-color: var(--color-danger-hover);
+@media (max-width: 767px) {
+  .confirm-dialog {
+    inset: auto 0 0 0;
+    margin: auto 0 0 0;
+    max-width: 100%;
+    width: 100%;
+    border-radius: var(--radius-md) var(--radius-md) 0 0;
+    animation: slide-up 0.25s ease;
+  }
 }
 </style>
