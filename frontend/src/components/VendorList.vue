@@ -20,11 +20,11 @@
     </div>
 
     <!-- Loading State -->
-    <div v-if="vendorStore.loading" class="vendor-list__state">Loading vendors...</div>
+    <div v-if="isLoading" class="vendor-list__state">Loading vendors...</div>
 
     <!-- Error State -->
-    <div v-else-if="vendorStore.error" class="vendor-list__state vendor-list__state--error">
-      {{ vendorStore.error }}
+    <div v-else-if="error" class="vendor-list__state vendor-list__state--error">
+      {{ error.message }}
     </div>
 
     <!-- Empty State -->
@@ -129,7 +129,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, h } from 'vue';
+import { ref, computed, h } from 'vue';
 import {
   useVueTable,
   createColumnHelper,
@@ -140,7 +140,7 @@ import {
   type SortingState,
   type Updater,
 } from '@tanstack/vue-table';
-import { useVendorStore } from '../stores/vendorStore';
+import { useVendors } from '../composables/useVendors';
 import ConfirmDialog from './ConfirmDialog.vue';
 import SearchIcon from './icons/SearchIcon.vue';
 import PlusIcon from './icons/PlusIcon.vue';
@@ -155,7 +155,7 @@ const emit = defineEmits<{
   editVendor: [vendor: Vendor];
 }>();
 
-const vendorStore = useVendorStore();
+const { vendors, isLoading, error, deleteVendor } = useVendors();
 const showDeleteDialog = ref(false);
 const vendorToDelete = ref<Vendor | null>(null);
 const sorting = ref<SortingState>([]);
@@ -163,7 +163,7 @@ const searchQuery = ref('');
 
 const selectedVendor = ref<Vendor | null>(null);
 
-const hasNoVendors = computed(() => vendorStore.vendors.length === 0);
+const hasNoVendors = computed(() => vendors.value.length === 0);
 const hasNoResults = computed(() => table.getRowModel().rows.length === 0);
 
 function openDetail(vendor: Vendor): void {
@@ -182,9 +182,9 @@ function confirmDelete(vendor: Vendor): void {
 async function handleDelete(): Promise<void> {
   if (vendorToDelete.value?.id) {
     try {
-      await vendorStore.deleteVendor(vendorToDelete.value.id);
+      await deleteVendor.mutateAsync(vendorToDelete.value.id);
     } catch {
-      // Error is handled in the store
+      // Error is handled by TanStack Query
     }
   }
   showDeleteDialog.value = false;
@@ -261,7 +261,7 @@ const columns = [
 
 const table = useVueTable({
   get data() {
-    return vendorStore.vendors;
+    return vendors.value;
   },
   columns,
   state: {
@@ -289,9 +289,6 @@ const table = useVueTable({
   getFilteredRowModel: getFilteredRowModel(),
 });
 
-onMounted(() => {
-  vendorStore.fetchVendors();
-});
 </script>
 
 <style scoped>
@@ -450,15 +447,30 @@ onMounted(() => {
   background-color: var(--color-background);
 }
 
-</style>
+/* ── FlexRender child content (needs :deep) ── */
 
-<style>
-.vendor-table__actions {
+:deep(.vendor-table__actions) {
   display: flex;
   gap: var(--spacing-xs);
 }
 
-/* ── Mobile Detail Panel ── */
+:deep(.vendor-table__col--view) {
+  display: none;
+}
+
+@media (max-width: 767px) {
+  :deep(.vendor-table__col--contact),
+  :deep(.vendor-table__col--type),
+  :deep(.vendor-table__col--actions) {
+    display: none;
+  }
+
+  :deep(.vendor-table__col--view) {
+    display: table-cell;
+  }
+}
+
+/* ── Mobile Detail Panel (Teleport preserves scoped attrs) ── */
 
 .vendor-detail-overlay {
   position: fixed;
@@ -533,21 +545,5 @@ onMounted(() => {
   flex: 1;
 }
 
-/* ── Column Visibility ── */
-
-.vendor-table__col--view {
-  display: none;
-}
-
-@media (max-width: 767px) {
-  .vendor-table__col--contact,
-  .vendor-table__col--type,
-  .vendor-table__col--actions {
-    display: none;
-  }
-
-  .vendor-table__col--view {
-    display: table-cell;
-  }
-}
 </style>
+
