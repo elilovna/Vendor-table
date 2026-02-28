@@ -63,67 +63,153 @@ describe('useVendors', () => {
     vi.mocked(VendorService.deleteVendor).mockReset();
   });
 
-  it('should fetch vendors on mount', async () => {
-    vi.mocked(VendorService.getVendors).mockResolvedValue(mockVendors);
+  describe('fetching vendors', () => {
+    it('should fetch vendors on mount', async () => {
+      vi.mocked(VendorService.getVendors).mockResolvedValue(mockVendors);
 
-    const { result } = withSetup(() => useVendors());
-    await flushPromises();
+      const { result } = withSetup(() => useVendors());
+      await flushPromises();
 
-    expect(VendorService.getVendors).toHaveBeenCalledTimes(1);
-    expect(result.vendors.value).toEqual([...mockVendors].reverse());
-    expect(result.isLoading.value).toBe(false);
+      expect(VendorService.getVendors).toHaveBeenCalledTimes(1);
+      expect(result.vendors.value).toEqual([...mockVendors].reverse());
+      expect(result.isLoading.value).toBe(false);
+    });
+
+    it('should reverse vendor order to show newest first', async () => {
+      vi.mocked(VendorService.getVendors).mockResolvedValue(mockVendors);
+
+      const { result } = withSetup(() => useVendors());
+      await flushPromises();
+
+      expect(result.vendors.value[0].name).toBe('Test Company 2');
+      expect(result.vendors.value[1].name).toBe('Test Company 1');
+    });
+
+    it('should set loading state while fetching', () => {
+      vi.mocked(VendorService.getVendors).mockReturnValue(new Promise(() => {}));
+
+      const { result } = withSetup(() => useVendors());
+
+      expect(result.isLoading.value).toBe(true);
+    });
+
+    it('should handle fetch error', async () => {
+      vi.mocked(VendorService.getVendors).mockRejectedValue(new Error('Network error'));
+
+      const { result } = withSetup(() => useVendors());
+      await flushPromises();
+
+      expect(result.error.value).toBeInstanceOf(Error);
+      expect(result.error.value?.message).toBe('Network error');
+    });
+
+    it('should return empty array when no vendors exist', async () => {
+      vi.mocked(VendorService.getVendors).mockResolvedValue([]);
+
+      const { result } = withSetup(() => useVendors());
+      await flushPromises();
+
+      expect(result.vendors.value).toEqual([]);
+    });
   });
 
-  it('should set loading state while fetching', () => {
-    vi.mocked(VendorService.getVendors).mockReturnValue(new Promise(() => {}));
+  describe('createVendor mutation', () => {
+    it('should create a vendor and invalidate queries', async () => {
+      const newVendor: Vendor = {
+        name: 'New Company',
+        contact_person: 'New Person',
+        email: 'new@company.com',
+        partner_type: 'Supplier',
+      };
+      vi.mocked(VendorService.getVendors).mockResolvedValue(mockVendors);
+      vi.mocked(VendorService.createVendor).mockResolvedValue({ ...newVendor, id: 3 });
 
-    const { result } = withSetup(() => useVendors());
+      const { result } = withSetup(() => useVendors());
+      await flushPromises();
 
-    expect(result.isLoading.value).toBe(true);
+      await result.createVendor.mutateAsync(newVendor);
+      await flushPromises();
+
+      expect(VendorService.createVendor).toHaveBeenCalledWith(newVendor);
+      expect(VendorService.getVendors).toHaveBeenCalledTimes(2);
+    });
+
+    it('should handle create mutation error', async () => {
+      vi.mocked(VendorService.getVendors).mockResolvedValue(mockVendors);
+      vi.mocked(VendorService.createVendor).mockRejectedValue(new Error('Email already exists'));
+
+      const { result } = withSetup(() => useVendors());
+      await flushPromises();
+
+      await expect(
+        result.createVendor.mutateAsync({
+          name: 'Duplicate',
+          contact_person: 'Test',
+          email: 'john@testcompany.com',
+          partner_type: 'Supplier',
+        })
+      ).rejects.toThrow('Email already exists');
+    });
   });
 
-  it('should handle fetch error', async () => {
-    vi.mocked(VendorService.getVendors).mockRejectedValue(new Error('Network error'));
+  describe('updateVendor mutation', () => {
+    it('should update a vendor and invalidate queries', async () => {
+      const updatedVendor: Vendor = {
+        ...mockVendors[0],
+        name: 'Updated Company',
+      };
+      vi.mocked(VendorService.getVendors).mockResolvedValue(mockVendors);
+      vi.mocked(VendorService.updateVendor).mockResolvedValue(updatedVendor);
 
-    const { result } = withSetup(() => useVendors());
-    await flushPromises();
+      const { result } = withSetup(() => useVendors());
+      await flushPromises();
 
-    expect(result.error.value).toBeInstanceOf(Error);
-    expect(result.error.value?.message).toBe('Network error');
+      await result.updateVendor.mutateAsync({ id: 1, vendor: updatedVendor });
+      await flushPromises();
+
+      expect(VendorService.updateVendor).toHaveBeenCalledWith(1, updatedVendor);
+      expect(VendorService.getVendors).toHaveBeenCalledTimes(2);
+    });
+
+    it('should handle update mutation error', async () => {
+      vi.mocked(VendorService.getVendors).mockResolvedValue(mockVendors);
+      vi.mocked(VendorService.updateVendor).mockRejectedValue(new Error('Email already exists'));
+
+      const { result } = withSetup(() => useVendors());
+      await flushPromises();
+
+      await expect(
+        result.updateVendor.mutateAsync({
+          id: 1,
+          vendor: { ...mockVendors[0], email: 'jane@testcompany.com' },
+        })
+      ).rejects.toThrow('Email already exists');
+    });
   });
 
-  it('should create a vendor and invalidate queries', async () => {
-    const newVendor: Vendor = {
-      name: 'New Company',
-      contact_person: 'New Person',
-      email: 'new@company.com',
-      partner_type: 'Supplier',
-    };
-    vi.mocked(VendorService.getVendors).mockResolvedValue(mockVendors);
-    vi.mocked(VendorService.createVendor).mockResolvedValue({ ...newVendor, id: 3 });
+  describe('deleteVendor mutation', () => {
+    it('should delete a vendor and invalidate queries', async () => {
+      vi.mocked(VendorService.getVendors).mockResolvedValue(mockVendors);
+      vi.mocked(VendorService.deleteVendor).mockResolvedValue();
 
-    const { result } = withSetup(() => useVendors());
-    await flushPromises();
+      const { result } = withSetup(() => useVendors());
+      await flushPromises();
 
-    await result.createVendor.mutateAsync(newVendor);
-    await flushPromises();
+      await result.deleteVendor.mutateAsync(1);
+      await flushPromises();
 
-    expect(VendorService.createVendor).toHaveBeenCalledWith(newVendor);
-    // Should have refetched after mutation
-    expect(VendorService.getVendors).toHaveBeenCalledTimes(2);
-  });
+      expect(VendorService.deleteVendor).toHaveBeenCalledWith(1);
+      expect(VendorService.getVendors).toHaveBeenCalledTimes(2);
+    });
 
-  it('should delete a vendor and invalidate queries', async () => {
-    vi.mocked(VendorService.getVendors).mockResolvedValue(mockVendors);
-    vi.mocked(VendorService.deleteVendor).mockResolvedValue();
+    it('should handle delete mutation error', async () => {
+      vi.mocked(VendorService.getVendors).mockResolvedValue(mockVendors);
+      vi.mocked(VendorService.deleteVendor).mockRejectedValue(new Error('Vendor not found'));
 
-    const { result } = withSetup(() => useVendors());
-    await flushPromises();
+      const { result } = withSetup(() => useVendors());
+      await flushPromises();
 
-    await result.deleteVendor.mutateAsync(1);
-    await flushPromises();
-
-    expect(VendorService.deleteVendor).toHaveBeenCalledWith(1);
-    expect(VendorService.getVendors).toHaveBeenCalledTimes(2);
+      await expect(result.deleteVendor.mutateAsync(999)).rejects.toThrow('Vendor not found');
+    });
   });
 });
