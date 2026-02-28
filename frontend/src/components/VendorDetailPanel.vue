@@ -57,12 +57,18 @@ const emit = defineEmits<{
 }>()
 
 const dialogRef = ref<HTMLDialogElement | null>(null)
+const triggerElement = ref<Element | null>(null)
 
 watch(() => props.vendor, (vendor) => {
   if (vendor) {
+    triggerElement.value = document.activeElement
     dialogRef.value?.showModal()
   } else {
     dialogRef.value?.close()
+    if (triggerElement.value instanceof HTMLElement) {
+      triggerElement.value.focus()
+    }
+    triggerElement.value = null
   }
 })
 </script>

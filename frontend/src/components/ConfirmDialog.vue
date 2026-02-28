@@ -5,6 +5,7 @@
     </div>
     <h3 class="confirm-dialog__title">{{ title }}</h3>
     <p class="confirm-dialog__message">{{ message }}</p>
+    <p v-if="error" class="confirm-dialog__error" role="alert">{{ error }}</p>
     <div class="confirm-dialog__actions">
       <button class="btn btn--outline" @click="cancel">Cancel</button>
       <button class="btn btn--danger" @click="confirm">Delete</button>
@@ -20,6 +21,7 @@ const props = defineProps<{
   open: boolean;
   title: string;
   message: string;
+  error?: string | null;
 }>();
 
 const emit = defineEmits<{
@@ -28,12 +30,18 @@ const emit = defineEmits<{
 }>();
 
 const dialogRef = ref<HTMLDialogElement | null>(null);
+const triggerElement = ref<Element | null>(null);
 
 watch(() => props.open, (isOpen) => {
   if (isOpen) {
+    triggerElement.value = document.activeElement;
     dialogRef.value?.showModal();
   } else {
     dialogRef.value?.close();
+    if (triggerElement.value instanceof HTMLElement) {
+      triggerElement.value.focus();
+    }
+    triggerElement.value = null;
   }
 });
 
@@ -79,6 +87,15 @@ function cancel(): void {
   font-size: var(--font-size-base);
   color: var(--color-text-secondary);
   line-height: 1.5;
+}
+
+.confirm-dialog__error {
+  margin: 0 0 var(--spacing-md);
+  padding: var(--spacing-sm) var(--spacing-md);
+  font-size: var(--font-size-sm);
+  color: var(--color-danger);
+  background-color: var(--color-danger-subtle);
+  border-radius: var(--radius-sm);
 }
 
 .confirm-dialog__actions {

@@ -152,9 +152,10 @@ const { value: contactPerson, errorMessage: contactPersonError, validate: valida
 const { value: email, errorMessage: emailError, validate: validateEmail } = useField<string>('email', emailValidator);
 const { value: partnerType } = useField<PartnerType>('partner_type');
 
-async function openDialog(): Promise<void> {
+function openDialog(): void {
   createVendor.reset();
   updateVendor.reset();
+  resetForm();
   if (props.vendor) {
     setValues({
       name: props.vendor.name,
@@ -184,7 +185,6 @@ watch(() => props.open, (isOpen) => {
 
 function close(): void {
   emit('close');
-  resetForm();
 }
 
 const onSubmit = handleSubmit(async (values) => {
