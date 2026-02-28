@@ -25,6 +25,7 @@ export function createVendorColumns(callbacks: VendorColumnCallbacks) {
   return [
     columnHelper.accessor('name', {
       header: 'Name',
+      cell: (info) => h('span', { style: 'font-weight: 600' }, info.getValue()),
     }),
     columnHelper.accessor('contact_person', {
       header: 'Contact Person',
