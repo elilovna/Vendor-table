@@ -1,7 +1,7 @@
 import { computed, type ComputedRef } from 'vue'
 import { useQuery, useMutation, useQueryClient, type UseMutationReturnType } from '@tanstack/vue-query'
 import { VendorService } from '../services/VendorService'
-import type { Vendor } from '../types/Vendor'
+import type { Vendor, VendorInput } from '../types/Vendor'
 
 const VENDORS_KEY = ['vendors'] as const
 
@@ -9,8 +9,8 @@ interface UseVendorsReturn {
   vendors: ComputedRef<Vendor[]>
   isLoading: ComputedRef<boolean>
   error: ComputedRef<Error | null>
-  createVendor: UseMutationReturnType<Vendor, Error, Vendor, unknown>
-  updateVendor: UseMutationReturnType<Vendor, Error, { id: number; vendor: Vendor }, unknown>
+  createVendor: UseMutationReturnType<Vendor, Error, VendorInput, unknown>
+  updateVendor: UseMutationReturnType<Vendor, Error, { id: number; vendor: VendorInput }, unknown>
   deleteVendor: UseMutationReturnType<void, Error, number, unknown>
 }
 
@@ -28,14 +28,14 @@ export function useVendors(): UseVendorsReturn {
   const error = computed(() => queryError.value)
 
   const createVendor = useMutation({
-    mutationFn: (vendor: Vendor) => VendorService.createVendor(vendor),
+    mutationFn: (vendor: VendorInput) => VendorService.createVendor(vendor),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: VENDORS_KEY })
     },
   })
 
   const updateVendor = useMutation({
-    mutationFn: ({ id, vendor }: { id: number; vendor: Vendor }) =>
+    mutationFn: ({ id, vendor }: { id: number; vendor: VendorInput }) =>
       VendorService.updateVendor(id, vendor),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: VENDORS_KEY })

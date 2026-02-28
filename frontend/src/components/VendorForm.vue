@@ -7,7 +7,7 @@
       </button>
     </div>
 
-    <form class="vendor-form__body" @submit="onSubmit">
+    <form class="vendor-form__body" novalidate @submit.prevent="onSubmit">
       <div class="vendor-form__field">
         <label class="vendor-form__label" for="name">Name</label>
         <input
@@ -19,6 +19,8 @@
           :aria-invalid="nameError ? 'true' : undefined"
           :aria-describedby="nameError ? 'name-error' : undefined"
           placeholder="Company name"
+          required
+          autocomplete="organization"
           @blur="() => validateName()"
         />
         <span v-if="nameError" :id="'name-error'" class="vendor-form__field-error" role="alert">
@@ -37,6 +39,8 @@
           :aria-invalid="contactPersonError ? 'true' : undefined"
           :aria-describedby="contactPersonError ? 'contact-error' : undefined"
           placeholder="Contact person name"
+          required
+          autocomplete="name"
           @blur="() => validateContactPerson()"
         />
         <span v-if="contactPersonError" :id="'contact-error'" class="vendor-form__field-error" role="alert">
@@ -55,6 +59,8 @@
           :aria-invalid="emailError || mutationError ? 'true' : undefined"
           :aria-describedby="emailError ? 'email-error' : mutationError ? 'form-error' : undefined"
           placeholder="contact@example.com"
+          required
+          autocomplete="email"
           @blur="() => validateEmail()"
         />
         <span v-if="emailError" :id="'email-error'" class="vendor-form__field-error" role="alert">
@@ -94,7 +100,7 @@ import { useVendors } from '../composables/useVendors';
 import BaseSelect from './BaseSelect.vue';
 import XIcon from './icons/XIcon.vue';
 import { PARTNER_TYPES } from '../types/Vendor';
-import type { Vendor, PartnerType } from '../types/Vendor';
+import type { Vendor, VendorInput, PartnerType } from '../types/Vendor';
 
 const props = defineProps<{
   open: boolean;
@@ -109,8 +115,7 @@ const emit = defineEmits<{
 
 const { createVendor, updateVendor } = useVendors();
 const dialogRef = ref<HTMLDialogElement | null>(null);
-const isSubmitting = ref(false);
-const isBusy = computed(() => isSubmitting.value || createVendor.isPending.value || updateVendor.isPending.value);
+const isBusy = computed(() => createVendor.isPending.value || updateVendor.isPending.value);
 const mutationError = computed(() => createVendor.error.value?.message ?? updateVendor.error.value?.message ?? null);
 const triggerElement = ref<Element | null>(null);
 
@@ -131,14 +136,7 @@ function emailValidator(value: unknown): string | true {
   return true;
 }
 
-interface VendorFormValues {
-  name: string;
-  contact_person: string;
-  email: string;
-  partner_type: PartnerType;
-}
-
-const { handleSubmit, resetForm, setValues } = useForm<VendorFormValues>({
+const { handleSubmit, resetForm, setValues } = useForm<VendorInput>({
   initialValues: {
     name: '',
     contact_person: '',
@@ -188,24 +186,15 @@ function close(): void {
 }
 
 const onSubmit = handleSubmit(async (values) => {
-  isSubmitting.value = true;
   try {
-    const vendor: Vendor = {
-      name: values.name,
-      contact_person: values.contact_person,
-      email: values.email,
-      partner_type: values.partner_type,
-    };
-    if (isEditMode.value && props.vendor?.id) {
-      await updateVendor.mutateAsync({ id: props.vendor.id, vendor });
+    if (isEditMode.value && props.vendor) {
+      await updateVendor.mutateAsync({ id: props.vendor.id, vendor: values });
     } else {
-      await createVendor.mutateAsync(vendor);
+      await createVendor.mutateAsync(values);
     }
     close();
   } catch {
     // Error is handled by TanStack Query mutation
-  } finally {
-    isSubmitting.value = false;
   }
 });
 </script>
