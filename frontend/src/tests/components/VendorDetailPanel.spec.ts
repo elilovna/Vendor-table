@@ -15,16 +15,13 @@ describe('VendorDetailPanel', () => {
   function mountPanel(vendor: Vendor | null = mockVendor) {
     return mount(VendorDetailPanel, {
       props: { vendor },
-      global: {
-        stubs: { Teleport: true },
-      },
     });
   }
 
-  it('does not render content when vendor is null', () => {
-    const wrapper = mountPanel(null);
+  it('renders as a dialog element', () => {
+    const wrapper = mountPanel();
 
-    expect(wrapper.find('.vendor-detail').exists()).toBe(false);
+    expect(wrapper.find('dialog').exists()).toBe(true);
   });
 
   it('renders vendor name as title', () => {
@@ -76,14 +73,6 @@ describe('VendorDetailPanel', () => {
     expect(wrapper.emitted('close')).toHaveLength(1);
   });
 
-  it('emits close when overlay is clicked', async () => {
-    const wrapper = mountPanel();
-
-    await wrapper.find('.vendor-detail-overlay').trigger('click');
-
-    expect(wrapper.emitted('close')).toHaveLength(1);
-  });
-
   it('emits edit with vendor when edit button is clicked', async () => {
     const wrapper = mountPanel();
 
@@ -102,11 +91,9 @@ describe('VendorDetailPanel', () => {
     expect(wrapper.emitted('delete')![0]).toEqual([mockVendor]);
   });
 
-  it('has accessible dialog role', () => {
+  it('has close button with accessible label', () => {
     const wrapper = mountPanel();
 
-    const aside = wrapper.find('[role="dialog"]');
-    expect(aside.exists()).toBe(true);
-    expect(aside.attributes('aria-label')).toBe('Vendor details');
+    expect(wrapper.find('[aria-label="Close details"]').exists()).toBe(true);
   });
 });

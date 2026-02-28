@@ -5,16 +5,16 @@
       <div class="vendor-list__toolbar-left">
         <div class="vendor-list__search">
           <SearchIcon class="vendor-list__search-icon" />
-          <label for="vendor-search" class="vendor-list__sr-only">Search vendors</label>
+          <label for="vendor-search" class="sr-only">Search vendors</label>
           <input
             id="vendor-search"
             v-model="searchQuery"
             type="text"
-            class="vendor-list__search-input"
+            class="input-base vendor-list__search-input"
             placeholder="Search vendors..."
           />
         </div>
-        <label for="type-filter" class="vendor-list__sr-only">Filter by partner type</label>
+        <label for="type-filter" class="sr-only">Filter by partner type</label>
         <BaseSelect
           id="type-filter"
           :model-value="partnerTypeFilter ?? ''"
@@ -47,7 +47,7 @@
       No vendors match your search.
     </div>
 
-    <table v-else class="vendor-table">
+    <table v-else class="vendor-table" aria-label="Registered vendors">
       <thead>
         <tr v-for="headerGroup in table.getHeaderGroups()" :key="headerGroup.id">
           <th
@@ -221,20 +221,6 @@ const table = useVueTable({
   transition: background-color var(--transition-normal);
 }
 
-/* ── Screen reader only ── */
-
-.vendor-list__sr-only {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border-width: 0;
-}
-
 /* ── Toolbar ── */
 
 .vendor-list__toolbar {
@@ -289,25 +275,7 @@ const table = useVueTable({
 
 .vendor-list__search-input {
   width: 100%;
-  padding: 10px var(--spacing-sm) 10px 40px;
-  border: 1px solid var(--color-input);
-  border-radius: var(--radius-md);
-  background-color: var(--color-surface);
-  color: var(--color-text);
-  font-size: var(--font-size-base);
-  font-family: var(--font-family-base);
-  outline: none;
-  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
-}
-
-.vendor-list__search-input::placeholder {
-  color: var(--color-text-secondary);
-}
-
-.vendor-list__search-input:focus-visible {
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px var(--color-focus-ring);
-  outline: none;
+  padding: var(--spacing-input-y) var(--spacing-sm) var(--spacing-input-y) 40px;
 }
 
 .vendor-list__add-btn {
@@ -336,6 +304,7 @@ const table = useVueTable({
 .vendor-table {
   width: 100%;
   border-collapse: collapse;
+  table-layout: fixed;
 }
 
 .vendor-table__header {
@@ -378,6 +347,9 @@ const table = useVueTable({
   color: var(--color-text);
   border-bottom: 1px solid var(--color-border);
   vertical-align: middle;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .vendor-table__row {
@@ -394,6 +366,10 @@ const table = useVueTable({
 }
 
 /* ── FlexRender child content (needs :deep) ── */
+
+:deep(.vendor-table__name) {
+  font-weight: 600;
+}
 
 :deep(.vendor-table__actions) {
   display: flex;
@@ -413,6 +389,8 @@ const table = useVueTable({
 
   :deep(.vendor-table__col--view) {
     display: table-cell;
+    width: 48px;
+    text-align: right;
   }
 }
 </style>

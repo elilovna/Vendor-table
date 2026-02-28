@@ -1,5 +1,5 @@
 <template>
-  <dialog ref="dialogRef" class="confirm-dialog" @cancel.prevent="cancel">
+  <dialog ref="dialogRef" class="dialog-base dialog-base--bottom-sheet confirm-dialog" @cancel.prevent="cancel">
     <div class="confirm-dialog__icon">
       <AlertCircleIcon />
     </div>
@@ -48,23 +48,11 @@ function cancel(): void {
 
 <style scoped>
 .confirm-dialog {
-  border: none;
-  border-radius: var(--radius-md);
   padding: var(--spacing-lg);
   max-width: 400px;
   width: 90%;
-  margin: auto;
-  inset: 0;
-  background-color: var(--color-surface);
-  color: var(--color-text);
-  box-shadow: var(--shadow-lg);
   text-align: center;
   animation: scale-in 0.2s ease;
-}
-
-.confirm-dialog::backdrop {
-  background: hsl(0 0% 0% / 0.5);
-  animation: fade-in 0.2s ease;
 }
 
 .confirm-dialog__icon {
@@ -75,7 +63,7 @@ function cancel(): void {
   height: 48px;
   margin: 0 auto var(--spacing-md);
   border-radius: 50%;
-  background-color: hsl(0 72% 50% / 0.1);
+  background-color: var(--color-danger-subtle);
   color: var(--color-danger);
 }
 
@@ -99,15 +87,10 @@ function cancel(): void {
   gap: var(--spacing-sm);
 }
 
-/* ── Mobile: bottom sheet ── */
-
 @media (max-width: 767px) {
   .confirm-dialog {
-    inset: auto 0 0 0;
-    margin: auto 0 0 0;
     max-width: 100%;
     width: 100%;
-    border-radius: var(--radius-md) var(--radius-md) 0 0;
     animation: slide-up 0.25s ease;
   }
 }

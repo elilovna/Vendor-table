@@ -1,20 +1,11 @@
 import { describe, it, expect, vi } from 'vitest';
 import { createVendorColumns } from '../../components/table/vendorColumns';
-import type { Vendor } from '../../types/Vendor';
 
 describe('createVendorColumns', () => {
   const callbacks = {
     onEdit: vi.fn(),
     onDelete: vi.fn(),
     onView: vi.fn(),
-  };
-
-  const mockVendor: Vendor = {
-    id: 1,
-    name: 'Acme Corp',
-    contact_person: 'Jane Smith',
-    email: 'jane@acme.com',
-    partner_type: 'Partner',
   };
 
   it('creates 6 columns', () => {

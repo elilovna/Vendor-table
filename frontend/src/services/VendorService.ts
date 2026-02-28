@@ -1,11 +1,6 @@
 import type { Vendor } from '../types/Vendor';
-const useNodeBackend = true; // Set to true if using Node backend, false for Java backend
 
-// Use environment variables or default to localhost for development
-const API_URL_JAVA = import.meta.env.VITE_API_URL_JAVA || 'http://localhost:3001/api';
-const API_URL_NODE = import.meta.env.VITE_API_URL_NODE || 'http://localhost:3000/api';
-
-const API_URL = useNodeBackend ? API_URL_NODE : API_URL_JAVA;
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
 export const VendorService = {
   async getVendors(): Promise<Vendor[]> {
     try {
