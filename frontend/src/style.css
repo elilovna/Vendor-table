@@ -11,6 +11,7 @@
   --color-surface: hsl(210 40% 98%);
   --color-surface-alt: hsl(209 40% 96%);
   --color-background: hsl(209 40% 96%);
+  --color-row-hover: hsl(209 40% 93%);
 
   --color-text: hsl(222 47% 11%);
   --color-text-secondary: hsl(215 20% 65%);
@@ -70,6 +71,7 @@ html[data-theme="dark"] {
   --color-surface: hsl(217 32% 17%);
   --color-surface-alt: hsl(222 47% 11%);
   --color-background: hsl(222 47% 11%);
+  --color-row-hover: hsl(217 32% 22%);
 
   --color-text: hsl(210 40% 98%);
   --color-text-secondary: hsl(215 16% 46%);

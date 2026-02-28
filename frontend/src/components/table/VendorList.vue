@@ -390,7 +390,7 @@ const table = useVueTable({
 }
 
 .vendor-table__row:hover {
-  background-color: var(--color-background);
+  background-color: var(--color-row-hover);
 }
 
 /* ── FlexRender child content (needs :deep) ── */

@@ -53,6 +53,8 @@ function cancel(): void {
   padding: var(--spacing-lg);
   max-width: 400px;
   width: 90%;
+  margin: auto;
+  inset: 0;
   background-color: var(--color-surface);
   color: var(--color-text);
   box-shadow: var(--shadow-lg);

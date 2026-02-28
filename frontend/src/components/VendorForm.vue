@@ -88,7 +88,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, nextTick } from 'vue';
+import { ref, computed, watch } from 'vue';
 import { useForm, useField } from 'vee-validate';
 import { useVendors } from '../composables/useVendors';
 import BaseSelect from './BaseSelect.vue';
@@ -165,8 +165,6 @@ async function openDialog(): Promise<void> {
   }
   triggerElement.value = document.activeElement;
   dialogRef.value?.showModal();
-  await nextTick();
-  dialogRef.value?.querySelector('input')?.focus();
 }
 
 function closeDialog(): void {
@@ -185,8 +183,8 @@ watch(() => props.open, (isOpen) => {
 });
 
 function close(): void {
-  resetForm();
   emit('close');
+  resetForm();
 }
 
 const onSubmit = handleSubmit(async (values) => {
@@ -219,6 +217,8 @@ const onSubmit = handleSubmit(async (values) => {
   padding: 0;
   max-width: 480px;
   width: 90%;
+  margin: auto;
+  inset: 0;
   background-color: var(--color-surface);
   color: var(--color-text);
   box-shadow: var(--shadow-lg);

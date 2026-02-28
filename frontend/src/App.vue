@@ -30,18 +30,20 @@ function closeForm(): void {
 <template>
   <div class="app">
     <header class="app__header">
-      <div class="app__brand">
-        <div class="app__logo">V</div>
-        <h1 class="app__title">Vendor Management</h1>
+      <div class="app__header-content">
+        <div class="app__brand">
+          <div class="app__logo">V</div>
+          <h1 class="app__title">Vendor Management</h1>
+        </div>
+        <button
+          class="app__theme-toggle"
+          @click="toggle"
+          :aria-label="isDark ? 'Switch to light mode' : 'Switch to dark mode'"
+        >
+          <SunIcon v-if="isDark" />
+          <MoonIcon v-else />
+        </button>
       </div>
-      <button
-        class="app__theme-toggle"
-        @click="toggle"
-        :aria-label="isDark ? 'Switch to light mode' : 'Switch to dark mode'"
-      >
-        <SunIcon v-if="isDark" />
-        <MoonIcon v-else />
-      </button>
     </header>
 
     <main class="app__main">
@@ -62,13 +64,19 @@ function closeForm(): void {
 /* ── Header ── */
 
 .app__header {
+  background-color: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+  transition: background-color var(--transition-normal);
+}
+
+.app__header-content {
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: var(--spacing-sm) var(--spacing-lg);
-  background-color: var(--color-surface);
-  border-bottom: 1px solid var(--color-border);
-  transition: background-color var(--transition-normal);
+  max-width: 1400px;
+  width: 100%;
+  margin: 0 auto;
 }
 
 .app__brand {
