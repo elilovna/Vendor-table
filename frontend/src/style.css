@@ -28,6 +28,7 @@
 
   --color-success: hsl(152 60% 46%);
   --color-success-foreground: hsl(0 0% 100%);
+  --color-success-subtle: hsl(152 60% 46% / 0.1);
 
   --color-focus-ring: hsl(200 98% 39% / 0.25);
   --color-danger-subtle: hsl(0 72% 50% / 0.1);
@@ -92,6 +93,7 @@ html[data-theme="dark"] {
 
   --color-success: hsl(152 50% 38%);
   --color-success-foreground: hsl(0 0% 100%);
+  --color-success-subtle: hsl(152 50% 38% / 0.1);
 
   --color-focus-ring: hsl(198 93% 59% / 0.25);
   --color-danger-subtle: hsl(0 84% 60% / 0.1);

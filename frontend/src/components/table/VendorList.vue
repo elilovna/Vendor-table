@@ -96,8 +96,9 @@
       title="Delete Vendor"
       :open="showDeleteDialog"
       :message="`Are you sure you want to delete '${vendorToDelete?.name}'? This action cannot be undone.`"
+      :error="deleteError"
       @confirm="handleDelete"
-      @cancel="showDeleteDialog = false"
+      @cancel="cancelDelete"
     />
   </section>
 </template>
@@ -131,6 +132,7 @@ const emit = defineEmits<{
 const { vendors, isLoading, error, deleteVendor } = useVendors()
 const showDeleteDialog = ref(false)
 const vendorToDelete = ref<Vendor | null>(null)
+const deleteError = ref<string | null>(null)
 const sorting = ref<SortingState>([])
 const searchQuery = ref('')
 const partnerTypeFilter = ref<PartnerType | null>(null)
@@ -145,6 +147,7 @@ function handleFilterChange(value: string): void {
 }
 
 function confirmDelete(vendor: Vendor): void {
+  deleteError.value = null
   vendorToDelete.value = vendor
   showDeleteDialog.value = true
 }
@@ -159,16 +162,23 @@ function handleDetailDelete(vendor: Vendor): void {
   selectedVendor.value = null
 }
 
+function cancelDelete(): void {
+  showDeleteDialog.value = false
+  deleteError.value = null
+  vendorToDelete.value = null
+}
+
 async function handleDelete(): Promise<void> {
   if (vendorToDelete.value?.id) {
     try {
+      deleteError.value = null
       await deleteVendor.mutateAsync(vendorToDelete.value.id)
-    } catch {
-      // Error state is managed by TanStack Query's mutation error
+      showDeleteDialog.value = false
+      vendorToDelete.value = null
+    } catch (err: unknown) {
+      deleteError.value = err instanceof Error ? err.message : 'Failed to delete vendor. Please try again.'
     }
   }
-  showDeleteDialog.value = false
-  vendorToDelete.value = null
 }
 
 const columns = createVendorColumns({
