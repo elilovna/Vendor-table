@@ -4,7 +4,7 @@ import { QueryClient, VueQueryPlugin } from '@tanstack/vue-query';
 import { createApp, defineComponent } from 'vue';
 import { useVendors } from '../../composables/useVendors';
 import { VendorService } from '../../services/VendorService';
-import type { Vendor } from '../../types/Vendor';
+import type { Vendor, VendorInput } from '../../types/Vendor';
 
 vi.mock('../../services/VendorService', () => ({
   VendorService: {
@@ -115,7 +115,7 @@ describe('useVendors', () => {
 
   describe('createVendor mutation', () => {
     it('should create a vendor and invalidate queries', async () => {
-      const newVendor: Vendor = {
+      const newVendor: VendorInput = {
         name: 'New Company',
         contact_person: 'New Person',
         email: 'new@company.com',
@@ -154,12 +154,14 @@ describe('useVendors', () => {
 
   describe('updateVendor mutation', () => {
     it('should update a vendor and invalidate queries', async () => {
-      const updatedVendor: Vendor = {
-        ...mockVendors[0],
+      const updatedVendor: VendorInput = {
         name: 'Updated Company',
+        contact_person: mockVendors[0].contact_person,
+        email: mockVendors[0].email,
+        partner_type: mockVendors[0].partner_type,
       };
       vi.mocked(VendorService.getVendors).mockResolvedValue(mockVendors);
-      vi.mocked(VendorService.updateVendor).mockResolvedValue(updatedVendor);
+      vi.mocked(VendorService.updateVendor).mockResolvedValue({ ...updatedVendor, id: 1 });
 
       const { result } = withSetup(() => useVendors());
       await flushPromises();

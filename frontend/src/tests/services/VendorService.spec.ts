@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import type { Vendor } from '../../types/Vendor';
+import type { Vendor, VendorInput } from '../../types/Vendor';
 
 const mockFetch = vi.fn();
 vi.stubGlobal('fetch', mockFetch);
@@ -27,7 +27,6 @@ describe('VendorService', () => {
   beforeEach(async () => {
     vi.resetModules();
     mockFetch.mockReset();
-    vi.spyOn(console, 'error').mockImplementation(() => {});
 
     const module = await import('../../services/VendorService');
     VendorService = module.VendorService;
@@ -63,7 +62,7 @@ describe('VendorService', () => {
   });
 
   describe('createVendor', () => {
-    const newVendor: Vendor = {
+    const newVendor: VendorInput = {
       name: 'New Corp',
       contact_person: 'Alice',
       email: 'alice@newcorp.com',
@@ -111,8 +110,7 @@ describe('VendorService', () => {
   });
 
   describe('updateVendor', () => {
-    const updatedVendor: Vendor = {
-      id: 1,
+    const updatedVendor: VendorInput = {
       name: 'Acme Corp Updated',
       contact_person: 'Jane Smith',
       email: 'jane@acme.com',

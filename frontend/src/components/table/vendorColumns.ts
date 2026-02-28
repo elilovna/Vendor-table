@@ -1,6 +1,6 @@
 import { h } from 'vue'
 import { createColumnHelper } from '@tanstack/vue-table'
-import type { RowData } from '@tanstack/vue-table'
+import type { ColumnDef, RowData } from '@tanstack/vue-table'
 import PencilIcon from '../icons/PencilIcon.vue'
 import TrashIcon from '../icons/TrashIcon.vue'
 import EyeIcon from '../icons/EyeIcon.vue'
@@ -20,7 +20,7 @@ interface VendorColumnCallbacks {
 
 const columnHelper = createColumnHelper<Vendor>()
 
-export function createVendorColumns(callbacks: VendorColumnCallbacks) {
+export function createVendorColumns(callbacks: VendorColumnCallbacks): ColumnDef<Vendor, any>[] {
   return [
     columnHelper.accessor('name', {
       header: 'Name',

@@ -142,7 +142,7 @@ const hasNoVendors = computed(() => vendors.value.length === 0)
 const hasNoResults = computed(() => table.getRowModel().rows.length === 0)
 
 function handleFilterChange(value: string): void {
-  partnerTypeFilter.value = value === 'Partner' || value === 'Supplier' ? value : null
+  partnerTypeFilter.value = value ? value as PartnerType : null
   table.getColumn('partner_type')?.setFilterValue(partnerTypeFilter.value ?? undefined)
 }
 
@@ -169,7 +169,7 @@ function cancelDelete(): void {
 }
 
 async function handleDelete(): Promise<void> {
-  if (vendorToDelete.value?.id) {
+  if (vendorToDelete.value) {
     try {
       deleteError.value = null
       await deleteVendor.mutateAsync(vendorToDelete.value.id)
