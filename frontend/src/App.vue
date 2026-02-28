@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import VendorForm from './components/VendorForm.vue';
-import VendorList from './components/VendorList.vue';
+import VendorList from './components/table/VendorList.vue';
 import SunIcon from './components/icons/SunIcon.vue';
 import MoonIcon from './components/icons/MoonIcon.vue';
 import { useDarkMode } from './composables/useDarkMode';
