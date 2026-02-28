@@ -56,7 +56,7 @@
             class="vendor-table__header"
             :class="[
               header.column.getCanSort() ? 'vendor-table__header--sortable' : '',
-              (header.column.columnDef.meta as Record<string, string>)?.class ?? '',
+              header.column.columnDef.meta?.class ?? '',
             ]"
             @click="header.column.getToggleSortingHandler()?.($event)"
           >
@@ -77,7 +77,7 @@
             v-for="cell in row.getVisibleCells()"
             :key="cell.id"
             class="vendor-table__cell"
-            :class="(cell.column.columnDef.meta as Record<string, string>)?.class ?? ''"
+            :class="cell.column.columnDef.meta?.class ?? ''"
           >
             <FlexRender :render="cell.column.columnDef.cell" :props="cell.getContext()" />
           </td>
@@ -85,49 +85,12 @@
       </tbody>
     </table>
 
-    <!-- Mobile Detail Panel -->
-    <Teleport to="body">
-      <div v-if="selectedVendor" class="vendor-detail-overlay" @click.self="closeDetail">
-        <aside class="vendor-detail" role="dialog" aria-label="Vendor details">
-          <div class="vendor-detail__header">
-            <h3 class="vendor-detail__title">{{ selectedVendor.name }}</h3>
-            <button class="btn btn--icon btn--icon-neutral" aria-label="Close details" @click="closeDetail">
-              <XIcon />
-            </button>
-          </div>
-
-          <dl class="vendor-detail__fields">
-            <div class="vendor-detail__field">
-              <dt class="vendor-detail__label">Contact Person</dt>
-              <dd class="vendor-detail__value">{{ selectedVendor.contact_person }}</dd>
-            </div>
-            <div class="vendor-detail__field">
-              <dt class="vendor-detail__label">Email</dt>
-              <dd class="vendor-detail__value">{{ selectedVendor.email }}</dd>
-            </div>
-            <div class="vendor-detail__field">
-              <dt class="vendor-detail__label">Partner Type</dt>
-              <dd class="vendor-detail__value">
-                <span :class="`badge ${selectedVendor.partner_type === 'Partner' ? 'badge--partner' : 'badge--supplier'}`">
-                  {{ selectedVendor.partner_type }}
-                </span>
-              </dd>
-            </div>
-          </dl>
-
-          <div class="vendor-detail__actions">
-            <button class="btn btn--outline vendor-detail__btn" @click="emit('editVendor', selectedVendor!); closeDetail()">
-              <PencilIcon />
-              Edit
-            </button>
-            <button class="btn btn--danger vendor-detail__btn" @click="confirmDelete(selectedVendor!); closeDetail()">
-              <TrashIcon />
-              Delete
-            </button>
-          </div>
-        </aside>
-      </div>
-    </Teleport>
+    <VendorDetailPanel
+      :vendor="selectedVendor"
+      @close="selectedVendor = null"
+      @edit="handleDetailEdit"
+      @delete="handleDetailDelete"
+    />
 
     <ConfirmDialog
       title="Delete Vendor"
@@ -140,174 +103,109 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, h } from 'vue';
+import { ref, computed } from 'vue'
 import {
   useVueTable,
-  createColumnHelper,
   getCoreRowModel,
   getSortedRowModel,
   getFilteredRowModel,
   FlexRender,
   type SortingState,
   type Updater,
-} from '@tanstack/vue-table';
-import { useVendors } from '../composables/useVendors';
-import BaseSelect from './BaseSelect.vue';
-import ConfirmDialog from './ConfirmDialog.vue';
-import SearchIcon from './icons/SearchIcon.vue';
-import PlusIcon from './icons/PlusIcon.vue';
-import TrashIcon from './icons/TrashIcon.vue';
-import PencilIcon from './icons/PencilIcon.vue';
-import EyeIcon from './icons/EyeIcon.vue';
-import XIcon from './icons/XIcon.vue';
-import { PARTNER_TYPES } from '../types/Vendor';
-import type { Vendor, PartnerType } from '../types/Vendor';
+} from '@tanstack/vue-table'
+import { useVendors } from '../../composables/useVendors'
+import { createVendorColumns } from './vendorColumns'
+import BaseSelect from '../BaseSelect.vue'
+import ConfirmDialog from '../ConfirmDialog.vue'
+import VendorDetailPanel from '../VendorDetailPanel.vue'
+import SearchIcon from '../icons/SearchIcon.vue'
+import PlusIcon from '../icons/PlusIcon.vue'
+import { PARTNER_TYPES } from '../../types/Vendor'
+import type { Vendor, PartnerType } from '../../types/Vendor'
 
 const emit = defineEmits<{
-  addVendor: [];
-  editVendor: [vendor: Vendor];
-}>();
+  addVendor: []
+  editVendor: [vendor: Vendor]
+}>()
 
-const { vendors, isLoading, error, deleteVendor } = useVendors();
-const showDeleteDialog = ref(false);
-const vendorToDelete = ref<Vendor | null>(null);
-const sorting = ref<SortingState>([]);
-const searchQuery = ref('');
-const partnerTypeFilter = ref<PartnerType | null>(null);
+const { vendors, isLoading, error, deleteVendor } = useVendors()
+const showDeleteDialog = ref(false)
+const vendorToDelete = ref<Vendor | null>(null)
+const sorting = ref<SortingState>([])
+const searchQuery = ref('')
+const partnerTypeFilter = ref<PartnerType | null>(null)
+const selectedVendor = ref<Vendor | null>(null)
 
-const selectedVendor = ref<Vendor | null>(null);
-
-const hasNoVendors = computed(() => vendors.value.length === 0);
-const hasNoResults = computed(() => table.getRowModel().rows.length === 0);
+const hasNoVendors = computed(() => vendors.value.length === 0)
+const hasNoResults = computed(() => table.getRowModel().rows.length === 0)
 
 function handleFilterChange(value: string): void {
-  partnerTypeFilter.value = value === 'Partner' || value === 'Supplier' ? value : null;
-  table.getColumn('partner_type')?.setFilterValue(partnerTypeFilter.value ?? undefined);
-}
-
-function openDetail(vendor: Vendor): void {
-  selectedVendor.value = vendor;
-}
-
-function closeDetail(): void {
-  selectedVendor.value = null;
+  partnerTypeFilter.value = value === 'Partner' || value === 'Supplier' ? value : null
+  table.getColumn('partner_type')?.setFilterValue(partnerTypeFilter.value ?? undefined)
 }
 
 function confirmDelete(vendor: Vendor): void {
-  vendorToDelete.value = vendor;
-  showDeleteDialog.value = true;
+  vendorToDelete.value = vendor
+  showDeleteDialog.value = true
+}
+
+function handleDetailEdit(vendor: Vendor): void {
+  emit('editVendor', vendor)
+  selectedVendor.value = null
+}
+
+function handleDetailDelete(vendor: Vendor): void {
+  confirmDelete(vendor)
+  selectedVendor.value = null
 }
 
 async function handleDelete(): Promise<void> {
   if (vendorToDelete.value?.id) {
     try {
-      await deleteVendor.mutateAsync(vendorToDelete.value.id);
+      await deleteVendor.mutateAsync(vendorToDelete.value.id)
     } catch {
-      // Error is handled by TanStack Query
+      // Error state is managed by TanStack Query's mutation error
     }
   }
-  showDeleteDialog.value = false;
-  vendorToDelete.value = null;
+  showDeleteDialog.value = false
+  vendorToDelete.value = null
 }
 
-const columnHelper = createColumnHelper<Vendor>();
-
-const columns = [
-  columnHelper.accessor('name', {
-    header: 'Name',
-  }),
-  columnHelper.accessor('contact_person', {
-    header: 'Contact Person',
-    meta: { class: 'vendor-table__col--contact' },
-  }),
-  columnHelper.accessor('email', {
-    header: 'Email',
-  }),
-  columnHelper.accessor('partner_type', {
-    header: 'Partner Type',
-    meta: { class: 'vendor-table__col--type' },
-    cell: (info) => {
-      const value = info.getValue();
-      return h('span', {
-        class: `badge ${value === 'Partner' ? 'badge--partner' : 'badge--supplier'}`,
-      }, value);
-    },
-  }),
-  columnHelper.display({
-    id: 'actions',
-    header: 'Actions',
-    enableSorting: false,
-    meta: { class: 'vendor-table__col--actions' },
-    cell: (info) =>
-      h('div', { class: 'vendor-table__actions' }, [
-        h(
-          'button',
-          {
-            class: 'btn btn--icon',
-            onClick: () => emit('editVendor', info.row.original),
-            'aria-label': `Edit ${info.row.original.name}`,
-          },
-          [h(PencilIcon)]
-        ),
-        h(
-          'button',
-          {
-            class: 'btn btn--icon',
-            onClick: () => confirmDelete(info.row.original),
-            'aria-label': `Delete ${info.row.original.name}`,
-          },
-          [h(TrashIcon)]
-        ),
-      ]),
-  }),
-  columnHelper.display({
-    id: 'view',
-    header: '',
-    enableSorting: false,
-    meta: { class: 'vendor-table__col--view' },
-    cell: (info) =>
-      h(
-        'button',
-        {
-          class: 'btn btn--icon',
-          onClick: () => openDetail(info.row.original),
-          'aria-label': `View details for ${info.row.original.name}`,
-        },
-        [h(EyeIcon)]
-      ),
-  }),
-];
+const columns = createVendorColumns({
+  onEdit: (vendor) => emit('editVendor', vendor),
+  onDelete: (vendor) => confirmDelete(vendor),
+  onView: (vendor) => { selectedVendor.value = vendor },
+})
 
 const table = useVueTable({
   get data() {
-    return vendors.value;
+    return vendors.value
   },
   columns,
   state: {
     get sorting() {
-      return sorting.value;
+      return sorting.value
     },
     get globalFilter() {
-      return searchQuery.value;
+      return searchQuery.value
     },
   },
   onSortingChange: (updaterOrValue: Updater<SortingState>) => {
     sorting.value =
       typeof updaterOrValue === 'function'
         ? updaterOrValue(sorting.value)
-        : updaterOrValue;
+        : updaterOrValue
   },
   onGlobalFilterChange: (updaterOrValue: Updater<string>) => {
     searchQuery.value =
       typeof updaterOrValue === 'function'
         ? updaterOrValue(searchQuery.value)
-        : updaterOrValue;
+        : updaterOrValue
   },
   getCoreRowModel: getCoreRowModel(),
   getSortedRowModel: getSortedRowModel(),
   getFilteredRowModel: getFilteredRowModel(),
-});
-
+})
 </script>
 
 <style scoped>
@@ -416,7 +314,6 @@ const table = useVueTable({
   white-space: nowrap;
 }
 
-
 .vendor-list__add-btn:active {
   transform: scale(0.98);
 }
@@ -488,6 +385,10 @@ const table = useVueTable({
   transition: background-color var(--transition-fast);
 }
 
+.vendor-table__row:nth-child(even) {
+  background-color: var(--color-surface-alt);
+}
+
 .vendor-table__row:hover {
   background-color: var(--color-background);
 }
@@ -514,81 +415,4 @@ const table = useVueTable({
     display: table-cell;
   }
 }
-
-/* ── Mobile Detail Panel (Teleport preserves scoped attrs) ── */
-
-.vendor-detail-overlay {
-  position: fixed;
-  inset: 0;
-  background: hsl(0 0% 0% / 0.5);
-  z-index: 100;
-  animation: fade-in 0.2s ease;
-}
-
-.vendor-detail {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  max-height: 70vh;
-  overflow-y: auto;
-  background-color: var(--color-surface);
-  border-radius: var(--radius-md) var(--radius-md) 0 0;
-  box-shadow: var(--shadow-lg);
-  padding: var(--spacing-lg);
-  animation: slide-up 0.25s ease;
-}
-
-.vendor-detail__header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: var(--spacing-lg);
-}
-
-.vendor-detail__title {
-  font-size: var(--font-size-lg);
-  font-weight: 700;
-  color: var(--color-text);
-  margin: 0;
-}
-
-.vendor-detail__fields {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-md);
-  margin: 0;
-}
-
-.vendor-detail__field {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-xs);
-}
-
-.vendor-detail__label {
-  font-size: var(--font-size-sm);
-  font-weight: 600;
-  color: var(--color-text-secondary);
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-}
-
-.vendor-detail__value {
-  font-size: var(--font-size-base);
-  color: var(--color-text);
-  margin: 0;
-}
-
-.vendor-detail__actions {
-  display: flex;
-  gap: var(--spacing-sm);
-  margin-top: var(--spacing-lg);
-}
-
-.vendor-detail__btn {
-  flex: 1;
-}
-
 </style>
-
