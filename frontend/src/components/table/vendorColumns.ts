@@ -7,7 +7,6 @@ import EyeIcon from '../icons/EyeIcon.vue'
 import type { Vendor } from '../../types/Vendor'
 
 declare module '@tanstack/vue-table' {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   interface ColumnMeta<TData extends RowData, TValue = unknown> {
     class?: string
   }
@@ -25,7 +24,7 @@ export function createVendorColumns(callbacks: VendorColumnCallbacks) {
   return [
     columnHelper.accessor('name', {
       header: 'Name',
-      cell: (info) => h('span', { style: 'font-weight: 600' }, info.getValue()),
+      cell: (info) => h('span', { class: 'vendor-table__name' }, info.getValue()),
     }),
     columnHelper.accessor('contact_person', {
       header: 'Contact Person',

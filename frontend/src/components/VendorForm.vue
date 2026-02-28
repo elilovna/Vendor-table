@@ -1,5 +1,5 @@
 <template>
-  <dialog ref="dialogRef" class="vendor-form" @cancel.prevent="close">
+  <dialog ref="dialogRef" class="dialog-base dialog-base--bottom-sheet vendor-form" @cancel.prevent="close">
     <div class="vendor-form__header">
       <h2 class="vendor-form__title">{{ isEditMode ? 'Edit Vendor' : 'Add New Vendor' }}</h2>
       <button class="btn btn--icon btn--icon-neutral" @click="close" aria-label="Close dialog">
@@ -14,8 +14,8 @@
           id="name"
           v-model="name"
           type="text"
-          class="vendor-form__input"
-          :class="{ 'vendor-form__input--invalid': nameError }"
+          class="input-base vendor-form__input"
+          :class="{ 'input-base--invalid': nameError }"
           :aria-invalid="nameError ? 'true' : undefined"
           :aria-describedby="nameError ? 'name-error' : undefined"
           placeholder="Company name"
@@ -32,8 +32,8 @@
           id="contactPerson"
           v-model="contactPerson"
           type="text"
-          class="vendor-form__input"
-          :class="{ 'vendor-form__input--invalid': contactPersonError }"
+          class="input-base vendor-form__input"
+          :class="{ 'input-base--invalid': contactPersonError }"
           :aria-invalid="contactPersonError ? 'true' : undefined"
           :aria-describedby="contactPersonError ? 'contact-error' : undefined"
           placeholder="Contact person name"
@@ -50,8 +50,8 @@
           id="email"
           v-model="email"
           type="email"
-          class="vendor-form__input"
-          :class="{ 'vendor-form__input--invalid': emailError || mutationError }"
+          class="input-base vendor-form__input"
+          :class="{ 'input-base--invalid': emailError || mutationError }"
           :aria-invalid="emailError || mutationError ? 'true' : undefined"
           :aria-describedby="emailError ? 'email-error' : mutationError ? 'form-error' : undefined"
           placeholder="contact@example.com"
@@ -212,22 +212,10 @@ const onSubmit = handleSubmit(async (values) => {
 
 <style scoped>
 .vendor-form {
-  border: none;
-  border-radius: var(--radius-md);
   padding: 0;
   max-width: 480px;
   width: 90%;
-  margin: auto;
-  inset: 0;
-  background-color: var(--color-surface);
-  color: var(--color-text);
-  box-shadow: var(--shadow-lg);
   animation: scale-in 0.2s ease;
-}
-
-.vendor-form::backdrop {
-  background: hsl(0 0% 0% / 0.5);
-  animation: fade-in 0.2s ease;
 }
 
 /* ── Header ── */
@@ -266,33 +254,7 @@ const onSubmit = handleSubmit(async (values) => {
 
 .vendor-form__input {
   width: 100%;
-  padding: 10px var(--spacing-sm);
-  border: 1px solid var(--color-input);
-  border-radius: var(--radius-md);
-  background-color: var(--color-surface);
-  color: var(--color-text);
-  font-size: var(--font-size-base);
-  font-family: var(--font-family-base);
-  outline: none;
-  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
-}
-
-.vendor-form__input::placeholder {
-  color: var(--color-text-secondary);
-}
-
-.vendor-form__input:focus-visible {
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px var(--color-focus-ring);
-  outline: none;
-}
-
-.vendor-form__input--invalid {
-  border-color: var(--color-danger);
-}
-
-.vendor-form__input--invalid:focus-visible {
-  box-shadow: 0 0 0 3px hsl(0 72% 50% / 0.15);
+  padding: var(--spacing-input-y) var(--spacing-sm);
 }
 
 .vendor-form__field-error {
@@ -321,13 +283,10 @@ const onSubmit = handleSubmit(async (values) => {
 
 @media (max-width: 767px) {
   .vendor-form {
-    inset: auto 0 0 0;
-    margin: auto 0 0 0;
     max-width: 100%;
     width: 100%;
     max-height: 85vh;
     overflow-y: auto;
-    border-radius: var(--radius-md) var(--radius-md) 0 0;
     animation: slide-up 0.25s ease;
   }
 }

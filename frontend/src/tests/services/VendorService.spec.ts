@@ -27,6 +27,7 @@ describe('VendorService', () => {
   beforeEach(async () => {
     vi.resetModules();
     mockFetch.mockReset();
+    vi.spyOn(console, 'error').mockImplementation(() => {});
 
     const module = await import('../../services/VendorService');
     VendorService = module.VendorService;

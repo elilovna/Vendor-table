@@ -27,7 +27,6 @@ function mountList() {
   return mount(VendorList, {
     global: {
       plugins: [[VueQueryPlugin, { queryClient: createQueryClient() }]],
-      stubs: { Teleport: true },
     },
   });
 }
