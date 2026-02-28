@@ -64,14 +64,13 @@
 
       <div class="vendor-form__field">
         <label class="vendor-form__label" for="partnerType">Partner Type</label>
-        <select
+        <BaseSelect
           id="partnerType"
-          v-model="partnerType"
+          :model-value="partnerType"
+          :options="PARTNER_TYPES"
           class="vendor-form__input"
-        >
-          <option value="Supplier">Supplier</option>
-          <option value="Partner">Partner</option>
-        </select>
+          @update:model-value="partnerType = $event as PartnerType /* safe: options are PARTNER_TYPES */"
+        />
       </div>
 
       <div v-if="mutationError" id="form-error" class="vendor-form__error" role="alert">
@@ -92,8 +91,10 @@
 import { ref, computed, watch, nextTick } from 'vue';
 import { useForm, useField } from 'vee-validate';
 import { useVendors } from '../composables/useVendors';
+import BaseSelect from './BaseSelect.vue';
 import XIcon from './icons/XIcon.vue';
-import type { Vendor } from '../types/Vendor';
+import { PARTNER_TYPES } from '../types/Vendor';
+import type { Vendor, PartnerType } from '../types/Vendor';
 
 const props = defineProps<{
   open: boolean;
@@ -134,7 +135,7 @@ interface VendorFormValues {
   name: string;
   contact_person: string;
   email: string;
-  partner_type: 'Supplier' | 'Partner';
+  partner_type: PartnerType;
 }
 
 const { handleSubmit, resetForm, setValues } = useForm<VendorFormValues>({
@@ -149,7 +150,7 @@ const { handleSubmit, resetForm, setValues } = useForm<VendorFormValues>({
 const { value: name, errorMessage: nameError, validate: validateName } = useField<string>('name', requiredValidator);
 const { value: contactPerson, errorMessage: contactPersonError, validate: validateContactPerson } = useField<string>('contact_person', requiredValidator);
 const { value: email, errorMessage: emailError, validate: validateEmail } = useField<string>('email', emailValidator);
-const { value: partnerType } = useField<'Supplier' | 'Partner'>('partner_type');
+const { value: partnerType } = useField<PartnerType>('partner_type');
 
 async function openDialog(): Promise<void> {
   createVendor.reset();

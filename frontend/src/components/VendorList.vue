@@ -1,16 +1,26 @@
 <template>
   <section class="vendor-list">
-    <!-- Toolbar: Search + Add Button -->
+    <!-- Toolbar: Search + Filters + Add Button -->
     <div class="vendor-list__toolbar">
-      <div class="vendor-list__search">
-        <SearchIcon class="vendor-list__search-icon" />
-        <label for="vendor-search" class="vendor-list__sr-only">Search vendors</label>
-        <input
-          id="vendor-search"
-          v-model="searchQuery"
-          type="text"
-          class="vendor-list__search-input"
-          placeholder="Search vendors..."
+      <div class="vendor-list__toolbar-left">
+        <div class="vendor-list__search">
+          <SearchIcon class="vendor-list__search-icon" />
+          <label for="vendor-search" class="vendor-list__sr-only">Search vendors</label>
+          <input
+            id="vendor-search"
+            v-model="searchQuery"
+            type="text"
+            class="vendor-list__search-input"
+            placeholder="Search vendors..."
+          />
+        </div>
+        <label for="type-filter" class="vendor-list__sr-only">Filter by partner type</label>
+        <BaseSelect
+          id="type-filter"
+          :model-value="partnerTypeFilter ?? ''"
+          :options="PARTNER_TYPES"
+          placeholder="All Types"
+          @update:model-value="handleFilterChange"
         />
       </div>
       <button class="btn btn--primary vendor-list__add-btn" @click="emit('addVendor')">
@@ -51,8 +61,9 @@
             @click="header.column.getToggleSortingHandler()?.($event)"
           >
             <FlexRender :render="header.column.columnDef.header" :props="header.getContext()" />
-            <span v-if="header.column.getIsSorted() === 'asc'" class="vendor-table__sort-indicator"> &#8593;</span>
-            <span v-else-if="header.column.getIsSorted() === 'desc'" class="vendor-table__sort-indicator"> &#8595;</span>
+            <span v-if="header.column.getIsSorted() === 'asc'" class="vendor-table__sort-indicator" aria-label="Sorted ascending"> &#8593;</span>
+            <span v-else-if="header.column.getIsSorted() === 'desc'" class="vendor-table__sort-indicator" aria-label="Sorted descending"> &#8595;</span>
+            <span v-else-if="header.column.getCanSort()" class="vendor-table__sort-indicator vendor-table__sort-indicator--idle" aria-label="Sortable"> &#8597;</span>
           </th>
         </tr>
       </thead>
@@ -141,6 +152,7 @@ import {
   type Updater,
 } from '@tanstack/vue-table';
 import { useVendors } from '../composables/useVendors';
+import BaseSelect from './BaseSelect.vue';
 import ConfirmDialog from './ConfirmDialog.vue';
 import SearchIcon from './icons/SearchIcon.vue';
 import PlusIcon from './icons/PlusIcon.vue';
@@ -148,7 +160,8 @@ import TrashIcon from './icons/TrashIcon.vue';
 import PencilIcon from './icons/PencilIcon.vue';
 import EyeIcon from './icons/EyeIcon.vue';
 import XIcon from './icons/XIcon.vue';
-import type { Vendor } from '../types/Vendor';
+import { PARTNER_TYPES } from '../types/Vendor';
+import type { Vendor, PartnerType } from '../types/Vendor';
 
 const emit = defineEmits<{
   addVendor: [];
@@ -160,11 +173,17 @@ const showDeleteDialog = ref(false);
 const vendorToDelete = ref<Vendor | null>(null);
 const sorting = ref<SortingState>([]);
 const searchQuery = ref('');
+const partnerTypeFilter = ref<PartnerType | null>(null);
 
 const selectedVendor = ref<Vendor | null>(null);
 
 const hasNoVendors = computed(() => vendors.value.length === 0);
 const hasNoResults = computed(() => table.getRowModel().rows.length === 0);
+
+function handleFilterChange(value: string): void {
+  partnerTypeFilter.value = value === 'Partner' || value === 'Supplier' ? value : null;
+  table.getColumn('partner_type')?.setFilterValue(partnerTypeFilter.value ?? undefined);
+}
 
 function openDetail(vendor: Vendor): void {
   selectedVendor.value = vendor;
@@ -335,6 +354,21 @@ const table = useVueTable({
   }
 }
 
+.vendor-list__toolbar-left {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  width: 100%;
+}
+
+@media (min-width: 768px) {
+  .vendor-list__toolbar-left {
+    flex-direction: row;
+    align-items: center;
+    width: auto;
+  }
+}
+
 .vendor-list__search {
   position: relative;
   width: 100%;
@@ -382,6 +416,7 @@ const table = useVueTable({
   white-space: nowrap;
 }
 
+
 .vendor-list__add-btn:active {
   transform: scale(0.98);
 }
@@ -428,6 +463,16 @@ const table = useVueTable({
 
 .vendor-table__sort-indicator {
   color: var(--color-primary);
+}
+
+.vendor-table__sort-indicator--idle {
+  color: var(--color-text-secondary);
+  opacity: 0.4;
+  transition: opacity var(--transition-fast);
+}
+
+.vendor-table__header--sortable:hover .vendor-table__sort-indicator--idle {
+  opacity: 0.8;
 }
 
 .vendor-table__cell {
