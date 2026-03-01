@@ -271,7 +271,7 @@ const table = useVueTable({
 </template>
 
 <style scoped>
-/* ── Card Container ── */
+/* ── Container ── */
 
 .vendor-list {
   background-color: var(--color-surface);
@@ -318,6 +318,10 @@ const table = useVueTable({
   padding: var(--spacing-input-y) var(--spacing-sm) var(--spacing-input-y) 40px;
 }
 
+:deep(.base-select) {
+  width: 100%;
+}
+
 .vendor-list__add-btn {
   white-space: nowrap;
 }
@@ -339,13 +343,28 @@ const table = useVueTable({
   color: var(--color-danger);
 }
 
-/* ── Table ── */
+/* ── Table Structure ── */
 
 .vendor-table {
   width: 100%;
   border-collapse: collapse;
   table-layout: fixed;
 }
+
+.vendor-table__row {
+  animation: fade-in-up 0.3s ease both;
+  transition: background-color var(--transition-fast);
+}
+
+.vendor-table__row:nth-child(even) {
+  background-color: var(--color-surface-alt);
+}
+
+.vendor-table__row:hover {
+  background-color: var(--color-row-hover);
+}
+
+/* ── Table Header ── */
 
 .vendor-table__header {
   padding: var(--spacing-sm) var(--spacing-md);
@@ -381,6 +400,8 @@ const table = useVueTable({
   opacity: 0.8;
 }
 
+/* ── Table Cells ── */
+
 .vendor-table__cell {
   padding: var(--spacing-md);
   font-size: var(--font-size-base);
@@ -392,21 +413,6 @@ const table = useVueTable({
   white-space: nowrap;
 }
 
-.vendor-table__row {
-  animation: fade-in-up 0.3s ease both;
-  transition: background-color var(--transition-fast);
-}
-
-.vendor-table__row:nth-child(even) {
-  background-color: var(--color-surface-alt);
-}
-
-.vendor-table__row:hover {
-  background-color: var(--color-row-hover);
-}
-
-/* ── FlexRender child content (needs :deep) ── */
-
 :deep(.vendor-table__name) {
   font-weight: 600;
 }
@@ -415,6 +421,8 @@ const table = useVueTable({
   display: flex;
   gap: var(--spacing-xs);
 }
+
+/* ── Responsive Column Visibility ── */
 
 :deep(.vendor-table__col--contact),
 :deep(.vendor-table__col--type),
@@ -428,7 +436,10 @@ const table = useVueTable({
   text-align: right;
 }
 
+/* ── Desktop (≥ 768px) ── */
+
 @media (min-width: 768px) {
+  /* Toolbar */
   .vendor-list__toolbar {
     flex-direction: row;
     align-items: center;
@@ -445,6 +456,12 @@ const table = useVueTable({
     max-width: 25rem;
   }
 
+  :deep(.base-select) {
+    width: auto;
+    min-width: max-content;
+  }
+
+  /* Column visibility */
   :deep(.vendor-table__col--contact),
   :deep(.vendor-table__col--type),
   :deep(.vendor-table__col--actions) {

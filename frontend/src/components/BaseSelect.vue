@@ -43,7 +43,6 @@ defineEmits<{
 <style scoped>
 .base-select {
   position: relative;
-  display: inline-block;
 }
 
 .base-select__native {
