@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, watch } from 'vue';
+import { computed, watch, useTemplateRef } from 'vue';
 import { useForm, useField } from 'vee-validate';
 import { useVendors } from '@/composables/useVendors';
 import { useDialog } from '@/composables/useDialog';
@@ -20,7 +20,8 @@ const emit = defineEmits<{
 const isEditMode = computed(() => !!props.vendor);
 
 const { createVendor, updateVendor } = useVendors();
-const { dialogRef, openDialog, closeDialog } = useDialog();
+const dialogRef = useTemplateRef<HTMLDialogElement>('dialogRef');
+const { openDialog, closeDialog } = useDialog(dialogRef);
 const isBusy = computed(() => createVendor.isPending.value || updateVendor.isPending.value);
 const mutationError = computed(() => createVendor.error.value?.message ?? updateVendor.error.value?.message ?? null);
 

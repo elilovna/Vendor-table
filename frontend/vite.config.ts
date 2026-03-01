@@ -9,5 +9,16 @@ export default defineConfig({
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))
     }
+  },
+  build: {
+    cssCodeSplit: true,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'tanstack': ['@tanstack/vue-table', '@tanstack/vue-query'],
+          'vue-vendor': ['vue', 'vee-validate'],
+        }
+      }
+    }
   }
 })

@@ -7,7 +7,8 @@ import EyeIcon from '@/components/Icons/EyeIcon.vue'
 import type { Vendor } from '@/types/Vendor'
 
 declare module '@tanstack/vue-table' {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars -- generic params required by module augmentation
+  // Generics required by TanStack's module augmentation — must match the original signature
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   interface ColumnMeta<TData extends RowData, TValue = unknown> {
     class?: string
   }
@@ -20,8 +21,8 @@ interface VendorColumnCallbacks {
 }
 
 const columnHelper = createColumnHelper<Vendor>()
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any -- TanStack Table ColumnDef requires generic value type
+// Mixed column types (accessor + display) require `any` — `unknown` is not assignable from TanStack's inferred value types
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function createVendorColumns(callbacks: VendorColumnCallbacks): ColumnDef<Vendor, any>[] {
   return [
     columnHelper.accessor('name', {

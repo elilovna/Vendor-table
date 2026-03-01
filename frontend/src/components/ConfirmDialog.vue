@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useTemplateRef } from 'vue';
 import AlertCircleIcon from '@/components/Icons/AlertCircleIcon.vue';
 import { useDialog } from '@/composables/useDialog';
 
@@ -15,7 +16,8 @@ const emit = defineEmits<{
   cancel: [];
 }>();
 
-const { dialogRef } = useDialog(() => props.open);
+const dialogRef = useTemplateRef<HTMLDialogElement>('dialogRef');
+useDialog(dialogRef, () => props.open);
 
 function confirm(): void {
   emit('confirm');

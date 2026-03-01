@@ -1,13 +1,14 @@
-import { ref, watch, type Ref } from 'vue'
+import { ref, watch, type ShallowRef } from 'vue'
 
 interface UseDialogReturn {
-  dialogRef: Ref<HTMLDialogElement | null>
   openDialog: () => void
   closeDialog: () => void
 }
 
-export function useDialog(isOpen?: () => boolean): UseDialogReturn {
-  const dialogRef = ref<HTMLDialogElement | null>(null)
+export function useDialog(
+  dialogRef: Readonly<ShallowRef<HTMLDialogElement | null>>,
+  isOpen?: () => boolean,
+): UseDialogReturn {
   const triggerElement = ref<Element | null>(null)
 
   function openDialog(): void {
@@ -33,5 +34,5 @@ export function useDialog(isOpen?: () => boolean): UseDialogReturn {
     })
   }
 
-  return { dialogRef, openDialog, closeDialog }
+  return { openDialog, closeDialog }
 }

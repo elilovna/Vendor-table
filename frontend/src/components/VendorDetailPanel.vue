@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useTemplateRef } from 'vue'
 import XIcon from '@/components/Icons/XIcon.vue'
 import PencilIcon from '@/components/Icons/PencilIcon.vue'
 import TrashIcon from '@/components/Icons/TrashIcon.vue'
@@ -15,7 +16,8 @@ const emit = defineEmits<{
   delete: [vendor: Vendor]
 }>()
 
-const { dialogRef } = useDialog(() => !!props.vendor)
+const dialogRef = useTemplateRef<HTMLDialogElement>('dialogRef')
+useDialog(dialogRef, () => !!props.vendor)
 </script>
 
 <template>

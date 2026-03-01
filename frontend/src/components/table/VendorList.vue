@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, defineAsyncComponent } from 'vue'
 import {
   useVueTable,
   getCoreRowModel,
@@ -12,8 +12,6 @@ import {
 import { useVendors } from '@/composables/useVendors'
 import { createVendorColumns } from '@/components/Table/vendorColumns'
 import BaseSelect from '@/components/BaseSelect.vue'
-import ConfirmDialog from '@/components/ConfirmDialog.vue'
-import VendorDetailPanel from '@/components/VendorDetailPanel.vue'
 import SearchIcon from '@/components/Icons/SearchIcon.vue'
 import PlusIcon from '@/components/Icons/PlusIcon.vue'
 import { PARTNER_TYPES } from '@/types/Vendor'
@@ -23,6 +21,9 @@ const emit = defineEmits<{
   addVendor: []
   editVendor: [vendor: Vendor]
 }>()
+
+const ConfirmDialog = defineAsyncComponent(() => import('@/components/ConfirmDialog.vue'))
+const VendorDetailPanel = defineAsyncComponent(() => import('@/components/VendorDetailPanel.vue'))
 
 const { vendors, isLoading, error, deleteVendor } = useVendors()
 const showDeleteDialog = ref(false)
