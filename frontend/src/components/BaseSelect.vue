@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import ChevronDownIcon from './Icons/ChevronDownIcon.vue';
+
 defineProps<{
   modelValue: string;
   options: readonly string[];
@@ -12,44 +14,55 @@ defineEmits<{
 </script>
 
 <template>
-  <select
-    :id="id"
-    class="input-base base-select"
-    :class="{ 'base-select--placeholder': modelValue === '' }"
-    :value="modelValue"
-    @change="$emit('update:modelValue', ($event.target as HTMLSelectElement).value)"
-  >
-    <option
-      v-if="placeholder"
-      value=""
+  <div class="base-select">
+    <select
+      :id="id"
+      class="input-base base-select__native"
+      :class="{ 'base-select__native--placeholder': modelValue === '' }"
+      :value="modelValue"
+      @change="$emit('update:modelValue', ($event.target as HTMLSelectElement).value)"
     >
-      {{ placeholder }}
-    </option>
-    <option
-      v-for="opt in options"
-      :key="opt"
-      :value="opt"
-    >
-      {{ opt }}
-    </option>
-  </select>
+      <option
+        v-if="placeholder"
+        value=""
+      >
+        {{ placeholder }}
+      </option>
+      <option
+        v-for="opt in options"
+        :key="opt"
+        :value="opt"
+      >
+        {{ opt }}
+      </option>
+    </select>
+    <ChevronDownIcon class="base-select__icon" />
+  </div>
 </template>
 
 <style scoped>
 .base-select {
+  position: relative;
+  display: inline-block;
+}
+
+.base-select__native {
   appearance: none;
   padding: var(--spacing-input-y) calc(var(--spacing-md) + 20px) var(--spacing-input-y) var(--spacing-md);
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right var(--spacing-sm) center;
+  width: 100%;
   cursor: pointer;
 }
 
-.base-select--placeholder {
+.base-select__native--placeholder {
   color: var(--color-text-secondary);
 }
 
-:global(html[data-theme="dark"]) .base-select {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+.base-select__icon {
+  position: absolute;
+  right: var(--spacing-sm);
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--color-text-secondary);
+  pointer-events: none;
 }
 </style>

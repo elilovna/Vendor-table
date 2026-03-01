@@ -71,12 +71,12 @@ describe('BaseSelect', () => {
   it('applies placeholder modifier class when value is empty', () => {
     const wrapper = mountSelect({ modelValue: '' });
 
-    expect(wrapper.find('select').classes()).toContain('base-select--placeholder');
+    expect(wrapper.find('select').classes()).toContain('base-select__native--placeholder');
   });
 
   it('does not apply placeholder modifier class when value is selected', () => {
     const wrapper = mountSelect({ modelValue: 'Supplier' });
 
-    expect(wrapper.find('select').classes()).not.toContain('base-select--placeholder');
+    expect(wrapper.find('select').classes()).not.toContain('base-select__native--placeholder');
   });
 });
