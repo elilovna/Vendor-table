@@ -1,12 +1,12 @@
 import { Router, Request, Response } from 'express';
-import db from '../db/database';
+import { getDb } from '../db/database';
 import { validateVendorInput } from '../models/Vendor';
 
 const router = Router();
 
 // GET /vendors - List all vendors
 router.get('/', (_req: Request, res: Response) => {
-    db.all('SELECT * FROM vendors', [], (err, rows) => {
+    getDb().all('SELECT * FROM vendors', [], (err, rows) => {
         if (err) {
             console.error('GET /vendors error:', err);
             return res.status(500).json({ error: 'Internal server error' });
@@ -25,7 +25,7 @@ router.post('/', (req: Request, res: Response) => {
     const { name, contact_person, email, partner_type } = result.data;
     const sql = `INSERT INTO vendors (name, contact_person, email, partner_type) VALUES (?, ?, ?, ?)`;
 
-    db.run(sql, [name, contact_person, email, partner_type], function(err) {
+    getDb().run(sql, [name, contact_person, email, partner_type], function(err) {
         if (err) {
             if (err.message.includes('UNIQUE constraint failed')) {
                 return res.status(409).json({ error: 'A vendor with this email already exists' });
@@ -54,7 +54,7 @@ router.put('/:id', (req: Request, res: Response) => {
     const { name, contact_person, email, partner_type } = result.data;
     const sql = `UPDATE vendors SET name = ?, contact_person = ?, email = ?, partner_type = ? WHERE id = ?`;
 
-    db.run(sql, [name, contact_person, email, partner_type, id], function(err) {
+    getDb().run(sql, [name, contact_person, email, partner_type, id], function(err) {
         if (err) {
             if (err.message.includes('UNIQUE constraint failed')) {
                 return res.status(409).json({ error: 'A vendor with this email already exists' });
@@ -79,7 +79,7 @@ router.delete('/:id', (req: Request, res: Response) => {
         return res.status(400).json({ error: 'Invalid vendor ID' });
     }
 
-    db.run('DELETE FROM vendors WHERE id = ?', [id], function(err) {
+    getDb().run('DELETE FROM vendors WHERE id = ?', [id], function(err) {
         if (err) {
             console.error('DELETE /vendors error:', err);
             return res.status(500).json({ error: 'Internal server error' });

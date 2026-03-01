@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeAll, afterAll, beforeEach } from 'bun:test';
 import app from '../src/app';
-import db, { dbReady } from '../src/db/database';
+import { initDatabase, getDb, closeDatabase } from '../src/db/database';
 import type { Server } from 'http';
 
 if (process.env.DB_PATH !== ':memory:') {
@@ -14,7 +14,7 @@ let baseUrl: string;
 
 function runSql(sql: string): Promise<void> {
     return new Promise((resolve, reject) => {
-        db.run(sql, (err) => {
+        getDb().run(sql, (err) => {
             if (err) reject(err);
             else resolve();
         });
@@ -23,8 +23,9 @@ function runSql(sql: string): Promise<void> {
 
 function queryAll<T>(sql: string): Promise<T[]> {
     return new Promise((resolve, reject) => {
-        db.all(sql, (err, rows) => {
+        getDb().all(sql, (err, rows) => {
             if (err) reject(err);
+            // sqlite3 callback types aren't generic — safe to narrow here
             else resolve(rows as T[]);
         });
     });
@@ -67,7 +68,7 @@ let seeded: SeededVendor[] = [];
 // ── Setup / Teardown ──────────────────────────────────────────
 
 beforeAll(async () => {
-    await dbReady;
+    await initDatabase();
     await new Promise<void>((resolve) => {
         server = app.listen(0, () => {
             const address = server.address() as { port: number };
@@ -79,12 +80,7 @@ beforeAll(async () => {
 
 afterAll(async () => {
     server.close();
-    await new Promise<void>((resolve, reject) => {
-        db.close((err) => {
-            if (err) reject(err);
-            else resolve();
-        });
-    });
+    await closeDatabase();
 });
 
 beforeEach(async () => {

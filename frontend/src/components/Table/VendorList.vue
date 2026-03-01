@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, defineAsyncComponent } from 'vue'
+import { ref, computed, watch, defineAsyncComponent } from 'vue'
 import {
   useVueTable,
   getCoreRowModel,
@@ -10,6 +10,7 @@ import {
   type Updater,
 } from '@tanstack/vue-table'
 import { useVendors } from '@/composables/useVendors'
+import { useTableUrlState } from '@/composables/useTableUrlState'
 import { createVendorColumns } from '@/components/Table/vendorColumns'
 import BaseSelect from '@/components/BaseSelect.vue'
 import SearchIcon from '@/components/Icons/SearchIcon.vue'
@@ -26,21 +27,17 @@ const ConfirmDialog = defineAsyncComponent(() => import('@/components/ConfirmDia
 const VendorDetailPanel = defineAsyncComponent(() => import('@/components/VendorDetailPanel.vue'))
 
 const { vendors, isLoading, error, deleteVendor } = useVendors()
+const { searchQuery, sorting, partnerTypeFilter } = useTableUrlState()
 const showDeleteDialog = ref(false)
 const vendorToDelete = ref<Vendor | null>(null)
 const deleteError = ref<string | null>(null)
-const sorting = ref<SortingState>([])
-const searchQuery = ref('')
-const partnerTypeFilter = ref<PartnerType | null>(null)
 const selectedVendor = ref<Vendor | null>(null)
 
 const hasNoVendors = computed(() => vendors.value.length === 0)
 const hasNoResults = computed(() => table.getRowModel().rows.length === 0)
 
 function handleFilterChange(value: string): void {
-  // Safe cast: BaseSelect options are constrained to PARTNER_TYPES
   partnerTypeFilter.value = value ? value as PartnerType : null
-  table.getColumn('partner_type')?.setFilterValue(partnerTypeFilter.value ?? undefined)
 }
 
 function confirmDelete(vendor: Vendor): void {
@@ -113,6 +110,10 @@ const table = useVueTable({
   getSortedRowModel: getSortedRowModel(),
   getFilteredRowModel: getFilteredRowModel(),
 })
+
+watch(partnerTypeFilter, (value) => {
+  table.getColumn('partner_type')?.setFilterValue(value ?? undefined)
+}, { immediate: true })
 </script>
 
 <template>
