@@ -1,14 +1,15 @@
 import { Router, Request, Response } from 'express';
 import db from '../db/database';
-import { Vendor } from '../models/Vendor';
+import { validateVendorInput } from '../models/Vendor';
 
 const router = Router();
 
 // GET /vendors - List all vendors
-router.get('/', (req: Request, res: Response) => {
+router.get('/', (_req: Request, res: Response) => {
     db.all('SELECT * FROM vendors', [], (err, rows) => {
         if (err) {
-            return res.status(500).json({ error: err.message });
+            console.error('GET /vendors error:', err);
+            return res.status(500).json({ error: 'Internal server error' });
         }
         res.json(rows);
     });
@@ -16,34 +17,24 @@ router.get('/', (req: Request, res: Response) => {
 
 // POST /vendors - Register a new vendor
 router.post('/', (req: Request, res: Response) => {
-    const { name, contact_person, email, partner_type } = req.body as Vendor;
-    
-    if (!name || !contact_person || !email || !partner_type) {
-        return res.status(400).json({ error: 'All fields are required' });
+    const result = validateVendorInput(req.body);
+    if ('error' in result) {
+        return res.status(400).json({ error: result.error });
     }
 
-    if (partner_type !== 'Supplier' && partner_type !== 'Partner') {
-        return res.status(400).json({ error: 'partner_type must be either "Supplier" or "Partner"' });
-    }
+    const { name, contact_person, email, partner_type } = result.data;
+    const sql = `INSERT INTO vendors (name, contact_person, email, partner_type) VALUES (?, ?, ?, ?)`;
 
-    const sql = `INSERT INTO vendors (name, contact_person, email, partner_type) 
-                 VALUES (?, ?, ?, ?)`;
-    
     db.run(sql, [name, contact_person, email, partner_type], function(err) {
         if (err) {
             if (err.message.includes('UNIQUE constraint failed')) {
                 return res.status(409).json({ error: 'A vendor with this email already exists' });
             }
-            return res.status(500).json({ error: err.message });
+            console.error('POST /vendors error:', err);
+            return res.status(500).json({ error: 'Internal server error' });
         }
 
-        res.status(201).json({
-            id: this.lastID,
-            name,
-            contact_person,
-            email,
-            partner_type
-        });
+        res.status(201).json({ id: this.lastID, name, contact_person, email, partner_type });
     });
 });
 
@@ -55,16 +46,12 @@ router.put('/:id', (req: Request, res: Response) => {
         return res.status(400).json({ error: 'Invalid vendor ID' });
     }
 
-    const { name, contact_person, email, partner_type } = req.body as Vendor;
-
-    if (!name || !contact_person || !email || !partner_type) {
-        return res.status(400).json({ error: 'All fields are required' });
+    const result = validateVendorInput(req.body);
+    if ('error' in result) {
+        return res.status(400).json({ error: result.error });
     }
 
-    if (partner_type !== 'Supplier' && partner_type !== 'Partner') {
-        return res.status(400).json({ error: 'partner_type must be either "Supplier" or "Partner"' });
-    }
-
+    const { name, contact_person, email, partner_type } = result.data;
     const sql = `UPDATE vendors SET name = ?, contact_person = ?, email = ?, partner_type = ? WHERE id = ?`;
 
     db.run(sql, [name, contact_person, email, partner_type, id], function(err) {
@@ -72,7 +59,8 @@ router.put('/:id', (req: Request, res: Response) => {
             if (err.message.includes('UNIQUE constraint failed')) {
                 return res.status(409).json({ error: 'A vendor with this email already exists' });
             }
-            return res.status(500).json({ error: err.message });
+            console.error('PUT /vendors error:', err);
+            return res.status(500).json({ error: 'Internal server error' });
         }
 
         if (this.changes === 0) {
@@ -93,7 +81,8 @@ router.delete('/:id', (req: Request, res: Response) => {
 
     db.run('DELETE FROM vendors WHERE id = ?', [id], function(err) {
         if (err) {
-            return res.status(500).json({ error: err.message });
+            console.error('DELETE /vendors error:', err);
+            return res.status(500).json({ error: 'Internal server error' });
         }
 
         if (this.changes === 0) {

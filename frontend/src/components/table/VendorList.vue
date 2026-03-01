@@ -165,6 +165,7 @@ const table = useVueTable({
     <div
       v-else-if="error"
       class="vendor-list__state vendor-list__state--error"
+      role="alert"
     >
       {{ error.message }}
     </div>
@@ -258,6 +259,7 @@ const table = useVueTable({
     <ConfirmDialog
       title="Delete Vendor"
       :open="showDeleteDialog"
+      :loading="deleteVendor.isPending.value"
       :message="`Are you sure you want to delete '${vendorToDelete?.name}'? This action cannot be undone.`"
       :error="deleteError"
       @confirm="handleDelete"
@@ -288,14 +290,6 @@ const table = useVueTable({
   margin-bottom: var(--spacing-lg);
 }
 
-@media (min-width: 768px) {
-  .vendor-list__toolbar {
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-  }
-}
-
 .vendor-list__toolbar-left {
   display: flex;
   flex-direction: column;
@@ -303,23 +297,9 @@ const table = useVueTable({
   width: 100%;
 }
 
-@media (min-width: 768px) {
-  .vendor-list__toolbar-left {
-    flex-direction: row;
-    align-items: center;
-    width: auto;
-  }
-}
-
 .vendor-list__search {
   position: relative;
   width: 100%;
-}
-
-@media (min-width: 768px) {
-  .vendor-list__search {
-    max-width: 400px;
-  }
 }
 
 .vendor-list__search-icon {
@@ -434,21 +414,43 @@ const table = useVueTable({
   gap: var(--spacing-xs);
 }
 
-:deep(.vendor-table__col--view) {
+:deep(.vendor-table__col--contact),
+:deep(.vendor-table__col--type),
+:deep(.vendor-table__col--actions) {
   display: none;
 }
 
-@media (max-width: 767px) {
+:deep(.vendor-table__col--view) {
+  display: table-cell;
+  width: 48px;
+  text-align: right;
+}
+
+@media (min-width: 768px) {
+  .vendor-list__toolbar {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .vendor-list__toolbar-left {
+    flex-direction: row;
+    align-items: center;
+    width: auto;
+  }
+
+  .vendor-list__search {
+    max-width: 25rem;
+  }
+
   :deep(.vendor-table__col--contact),
   :deep(.vendor-table__col--type),
   :deep(.vendor-table__col--actions) {
-    display: none;
+    display: table-cell;
   }
 
   :deep(.vendor-table__col--view) {
-    display: table-cell;
-    width: 48px;
-    text-align: right;
+    display: none;
   }
 }
 </style>

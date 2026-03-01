@@ -1,11 +1,17 @@
 import type { Vendor, VendorInput } from '../types/Vendor';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
+
+async function handleError(response: Response): Promise<never> {
+  const errorData = await response.json();
+  throw new Error(errorData.error);
+}
+
 export const VendorService = {
   async getVendors(): Promise<Vendor[]> {
     const response = await fetch(`${API_URL}/vendors`);
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+      await handleError(response);
     }
     return await response.json();
   },
@@ -20,11 +26,7 @@ export const VendorService = {
     });
 
     if (!response.ok) {
-      if (response.status === 409) {
-        const errorData = await response.json();
-        throw new Error(errorData.error);
-      }
-      throw new Error(`HTTP error! status: ${response.status}`);
+      await handleError(response);
     }
 
     return await response.json();
@@ -40,11 +42,7 @@ export const VendorService = {
     });
 
     if (!response.ok) {
-      if (response.status === 409) {
-        const errorData = await response.json();
-        throw new Error(errorData.error);
-      }
-      throw new Error(`HTTP error! status: ${response.status}`);
+      await handleError(response);
     }
 
     return await response.json();
@@ -56,7 +54,7 @@ export const VendorService = {
     });
 
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+      await handleError(response);
     }
   },
 }

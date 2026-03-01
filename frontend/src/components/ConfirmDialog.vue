@@ -1,12 +1,13 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue';
 import AlertCircleIcon from './Icons/AlertCircleIcon.vue';
+import { useDialog } from '../composables/useDialog';
 
 const props = defineProps<{
   open: boolean;
   title: string;
   message: string;
   error?: string | null;
+  loading?: boolean;
 }>();
 
 const emit = defineEmits<{
@@ -14,21 +15,7 @@ const emit = defineEmits<{
   cancel: [];
 }>();
 
-const dialogRef = ref<HTMLDialogElement | null>(null);
-const triggerElement = ref<Element | null>(null);
-
-watch(() => props.open, (isOpen) => {
-  if (isOpen) {
-    triggerElement.value = document.activeElement;
-    dialogRef.value?.showModal();
-  } else {
-    dialogRef.value?.close();
-    if (triggerElement.value instanceof HTMLElement) {
-      triggerElement.value.focus();
-    }
-    triggerElement.value = null;
-  }
-});
+const { dialogRef } = useDialog(() => props.open);
 
 function confirm(): void {
   emit('confirm');
@@ -70,9 +57,10 @@ function cancel(): void {
       </button>
       <button
         class="btn btn--danger"
+        :disabled="loading"
         @click="confirm"
       >
-        Delete
+        {{ loading ? 'Deleting...' : 'Delete' }}
       </button>
     </div>
   </dialog>
@@ -81,10 +69,10 @@ function cancel(): void {
 <style scoped>
 .confirm-dialog {
   padding: var(--spacing-lg);
-  max-width: 400px;
-  width: 90%;
+  max-width: 100%;
+  width: 100%;
   text-align: center;
-  animation: scale-in 0.2s ease;
+  animation: slide-up 0.2s ease;
 }
 
 .confirm-dialog__icon {
@@ -128,11 +116,11 @@ function cancel(): void {
   gap: var(--spacing-sm);
 }
 
-@media (max-width: 767px) {
+@media (min-width: 768px) {
   .confirm-dialog {
-    max-width: 100%;
-    width: 100%;
-    animation: slide-up 0.25s ease;
+    max-width: 25rem;
+    width: 90%;
+    animation: scale-in 0.2s ease;
   }
 }
 </style>
