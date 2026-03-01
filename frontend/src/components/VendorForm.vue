@@ -247,8 +247,8 @@ const onSubmit = handleSubmit(async (values) => {
 <style scoped>
 .vendor-form {
   padding: 0;
-  max-width: 100%;
   width: 100%;
+  max-width: 100%;
   max-height: 85vh;
   overflow-y: auto;
   animation: slide-up 0.25s ease;
@@ -264,10 +264,10 @@ const onSubmit = handleSubmit(async (values) => {
 }
 
 .vendor-form__title {
+  margin: 0;
   font-size: var(--font-size-lg);
   font-weight: 700;
   color: var(--color-text);
-  margin: 0;
 }
 
 /* ── Body ── */
@@ -294,15 +294,15 @@ const onSubmit = handleSubmit(async (values) => {
 
 .vendor-form__field-error {
   display: block;
-  color: var(--color-danger);
-  font-size: var(--font-size-sm);
   margin-top: var(--spacing-xs);
+  font-size: var(--font-size-sm);
+  color: var(--color-danger);
 }
 
 .vendor-form__error {
-  color: var(--color-danger);
-  font-size: var(--font-size-sm);
   margin-bottom: var(--spacing-sm);
+  font-size: var(--font-size-sm);
+  color: var(--color-danger);
 }
 
 /* ── Actions ── */
@@ -316,8 +316,8 @@ const onSubmit = handleSubmit(async (values) => {
 
 @media (min-width: 768px) {
   .vendor-form {
-    max-width: 30rem;
     width: 90%;
+    max-width: 30rem;
     max-height: none;
     overflow-y: visible;
     animation: scale-in 0.2s ease;

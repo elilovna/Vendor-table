@@ -46,9 +46,9 @@ defineEmits<{
 }
 
 .base-select__native {
-  appearance: none;
   padding: var(--spacing-input-y) calc(var(--spacing-md) + 20px) var(--spacing-input-y) var(--spacing-md);
   width: 100%;
+  appearance: none;
   cursor: pointer;
 }
 
@@ -58,8 +58,8 @@ defineEmits<{
 
 .base-select__icon {
   position: absolute;
-  right: var(--spacing-sm);
   top: 50%;
+  right: var(--spacing-sm);
   transform: translateY(-50%);
   color: var(--color-text-secondary);
   pointer-events: none;

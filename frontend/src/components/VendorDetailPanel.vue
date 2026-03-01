@@ -92,15 +92,14 @@ useDialog(dialogRef, () => !!props.vendor)
 
 <style scoped>
 .vendor-detail {
-  padding: var(--spacing-lg);
-  animation: slide-up 0.25s ease;
-  max-height: 70vh;
-  overflow-y: auto;
   inset: auto 0 0 0;
   margin: auto 0 0 0;
-  max-width: 100%;
+  padding: var(--spacing-lg);
   width: 100%;
+  max-height: 70vh;
+  overflow-y: auto;
   border-radius: var(--radius-md) var(--radius-md) 0 0;
+  animation: slide-up 0.25s ease;
 }
 
 .vendor-detail__header {
@@ -111,10 +110,10 @@ useDialog(dialogRef, () => !!props.vendor)
 }
 
 .vendor-detail__title {
+  margin: 0;
   font-size: var(--font-size-lg);
   font-weight: 700;
   color: var(--color-text);
-  margin: 0;
 }
 
 .vendor-detail__fields {
@@ -133,15 +132,15 @@ useDialog(dialogRef, () => !!props.vendor)
 .vendor-detail__label {
   font-size: var(--font-size-sm);
   font-weight: 600;
-  color: var(--color-text-secondary);
   text-transform: uppercase;
   letter-spacing: 0.04em;
+  color: var(--color-text-secondary);
 }
 
 .vendor-detail__value {
+  margin: 0;
   font-size: var(--font-size-base);
   color: var(--color-text);
-  margin: 0;
 }
 
 .vendor-detail__actions {

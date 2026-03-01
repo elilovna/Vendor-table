@@ -71,8 +71,8 @@ function cancel(): void {
 <style scoped>
 .confirm-dialog {
   padding: var(--spacing-lg);
-  max-width: 100%;
   width: 100%;
+  max-width: 100%;
   text-align: center;
   animation: slide-up 0.2s ease;
 }
@@ -81,12 +81,12 @@ function cancel(): void {
   display: flex;
   align-items: center;
   justify-content: center;
+  margin: 0 auto var(--spacing-md);
   width: 48px;
   height: 48px;
-  margin: 0 auto var(--spacing-md);
-  border-radius: 50%;
-  background-color: var(--color-danger-subtle);
   color: var(--color-danger);
+  background-color: var(--color-danger-subtle);
+  border-radius: 50%;
 }
 
 .confirm-dialog__title {
@@ -99,8 +99,8 @@ function cancel(): void {
 .confirm-dialog__message {
   margin: 0 0 var(--spacing-lg);
   font-size: var(--font-size-base);
-  color: var(--color-text-secondary);
   line-height: 1.5;
+  color: var(--color-text-secondary);
 }
 
 .confirm-dialog__error {
@@ -120,8 +120,8 @@ function cancel(): void {
 
 @media (min-width: 768px) {
   .confirm-dialog {
-    max-width: 25rem;
     width: 90%;
+    max-width: 25rem;
     animation: scale-in 0.2s ease;
   }
 }

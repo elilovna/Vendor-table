@@ -107,9 +107,9 @@ html[data-theme="dark"] {
 *,
 *::before,
 *::after {
-  box-sizing: border-box;
   margin: 0;
   padding: 0;
+  box-sizing: border-box;
 }
 
 body {
@@ -118,9 +118,9 @@ body {
   line-height: 1.6;
   color: var(--color-text);
   background-color: var(--color-background);
+  transition: background-color var(--transition-normal), color var(--transition-normal);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  transition: background-color var(--transition-normal), color var(--transition-normal);
 }
 
 #app {
@@ -142,18 +142,18 @@ body {
   justify-content: center;
   gap: var(--spacing-sm);
   padding: var(--spacing-input-y) var(--spacing-lg);
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-base);
   border: none;
   border-radius: var(--radius-md);
-  font-size: var(--font-size-base);
-  font-family: var(--font-family-base);
-  cursor: pointer;
   transition: background-color var(--transition-fast);
+  cursor: pointer;
 }
 
 .btn--primary {
-  background-color: var(--color-primary);
-  color: var(--color-primary-foreground);
   font-weight: 600;
+  color: var(--color-primary-foreground);
+  background-color: var(--color-primary);
 }
 
 .btn--primary:hover:not(:disabled) {
@@ -161,10 +161,10 @@ body {
 }
 
 .btn--outline {
-  background-color: var(--color-surface);
-  color: var(--color-text);
-  border: 1px solid var(--color-border);
   font-weight: 500;
+  color: var(--color-text);
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
 }
 
 .btn--outline:hover:not(:disabled) {
@@ -172,9 +172,9 @@ body {
 }
 
 .btn--danger {
-  background-color: var(--color-danger);
-  color: var(--color-danger-foreground);
   font-weight: 600;
+  color: var(--color-danger-foreground);
+  background-color: var(--color-danger);
 }
 
 .btn--danger:hover:not(:disabled) {
@@ -182,11 +182,11 @@ body {
 }
 
 .btn--icon {
+  padding: 0;
   width: 32px;
   height: 32px;
-  padding: 0;
-  background: transparent;
   color: var(--color-text-secondary);
+  background: transparent;
 }
 
 .btn--icon:hover:not(:disabled) {
@@ -209,33 +209,33 @@ body {
 .badge {
   display: inline-block;
   padding: var(--spacing-xs) var(--spacing-sm);
-  border-radius: 999px;
   font-size: var(--font-size-xs);
   font-weight: 500;
   line-height: 1.4;
+  border-radius: 999px;
 }
 
 .badge--partner {
-  background-color: var(--color-secondary);
   color: var(--color-secondary-foreground);
+  background-color: var(--color-secondary);
 }
 
 .badge--supplier {
-  background-color: transparent;
   color: var(--color-text);
+  background-color: transparent;
   border: 1px solid var(--color-text);
 }
 
 /* ── Inputs ── */
 
 .input-base {
+  padding: var(--spacing-input-y) var(--spacing-sm);
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-base);
+  color: var(--color-text);
+  background-color: var(--color-surface);
   border: 1px solid var(--color-input);
   border-radius: var(--radius-md);
-  background-color: var(--color-surface);
-  color: var(--color-text);
-  font-size: var(--font-size-base);
-  font-family: var(--font-family-base);
-  padding: var(--spacing-input-y) var(--spacing-sm);
   outline: none;
   transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
 }
@@ -246,8 +246,8 @@ body {
 
 .input-base:focus-visible {
   border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px var(--color-focus-ring);
   outline: none;
+  box-shadow: 0 0 0 3px var(--color-focus-ring);
 }
 
 .input-base--invalid {
@@ -261,18 +261,18 @@ body {
 /* ── Dialogs ── */
 
 .dialog-base {
+  color: var(--color-text);
+  background-color: var(--color-surface);
   border: none;
   border-radius: var(--radius-md);
-  background-color: var(--color-surface);
-  color: var(--color-text);
   box-shadow: var(--shadow-lg);
 }
 
 .dialog-base--bottom-sheet {
   inset: auto 0 0 0;
   margin: auto 0 0 0;
-  max-width: 100%;
   width: 100%;
+  max-width: 100%;
   border-radius: var(--radius-md) var(--radius-md) 0 0;
 }
 
@@ -285,8 +285,8 @@ body {
   .dialog-base--bottom-sheet {
     inset: 0;
     margin: auto;
-    max-width: none;
     width: auto;
+    max-width: none;
     border-radius: var(--radius-md);
   }
 }
@@ -295,10 +295,10 @@ body {
 
 .sr-only {
   position: absolute;
+  margin: -1px;
+  padding: 0;
   width: 1px;
   height: 1px;
-  padding: 0;
-  margin: -1px;
   overflow: hidden;
   clip: rect(0, 0, 0, 0);
   white-space: nowrap;
@@ -309,12 +309,13 @@ body {
 
 @keyframes fade-in-up {
   from {
-    opacity: 0;
     transform: translateY(8px);
+    opacity: 0;
   }
+
   to {
-    opacity: 1;
     transform: translateY(0);
+    opacity: 1;
   }
 }
 
@@ -325,12 +326,13 @@ body {
 
 @keyframes scale-in {
   from {
-    opacity: 0;
     transform: scale(0.9);
+    opacity: 0;
   }
+
   to {
-    opacity: 1;
     transform: scale(1);
+    opacity: 1;
   }
 }
 
