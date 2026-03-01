@@ -1,21 +1,6 @@
-<template>
-  <dialog ref="dialogRef" class="dialog-base dialog-base--bottom-sheet confirm-dialog" @cancel.prevent="cancel">
-    <div class="confirm-dialog__icon">
-      <AlertCircleIcon />
-    </div>
-    <h3 class="confirm-dialog__title">{{ title }}</h3>
-    <p class="confirm-dialog__message">{{ message }}</p>
-    <p v-if="error" class="confirm-dialog__error" role="alert">{{ error }}</p>
-    <div class="confirm-dialog__actions">
-      <button class="btn btn--outline" @click="cancel">Cancel</button>
-      <button class="btn btn--danger" @click="confirm">Delete</button>
-    </div>
-  </dialog>
-</template>
-
 <script setup lang="ts">
 import { ref, watch } from 'vue';
-import AlertCircleIcon from './icons/AlertCircleIcon.vue';
+import AlertCircleIcon from './Icons/AlertCircleIcon.vue';
 
 const props = defineProps<{
   open: boolean;
@@ -53,6 +38,45 @@ function cancel(): void {
   emit('cancel');
 }
 </script>
+
+<template>
+  <dialog
+    ref="dialogRef"
+    class="dialog-base dialog-base--bottom-sheet confirm-dialog"
+    @cancel.prevent="cancel"
+  >
+    <div class="confirm-dialog__icon">
+      <AlertCircleIcon />
+    </div>
+    <h3 class="confirm-dialog__title">
+      {{ title }}
+    </h3>
+    <p class="confirm-dialog__message">
+      {{ message }}
+    </p>
+    <p
+      v-if="error"
+      class="confirm-dialog__error"
+      role="alert"
+    >
+      {{ error }}
+    </p>
+    <div class="confirm-dialog__actions">
+      <button
+        class="btn btn--outline"
+        @click="cancel"
+      >
+        Cancel
+      </button>
+      <button
+        class="btn btn--danger"
+        @click="confirm"
+      >
+        Delete
+      </button>
+    </div>
+  </dialog>
+</template>
 
 <style scoped>
 .confirm-dialog {

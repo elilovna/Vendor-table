@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { createVendorColumns } from '../../components/table/vendorColumns';
+import { createVendorColumns } from '../../components/Table/vendorColumns';
 
 describe('createVendorColumns', () => {
   const callbacks = {

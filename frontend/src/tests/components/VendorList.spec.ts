@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { mount, flushPromises } from '@vue/test-utils';
 import { QueryClient, VueQueryPlugin } from '@tanstack/vue-query';
-import VendorList from '../../components/table/VendorList.vue';
+import VendorList from '../../components/Table/VendorList.vue';
 import { VendorService } from '../../services/VendorService';
 import type { Vendor } from '../../types/Vendor';
 

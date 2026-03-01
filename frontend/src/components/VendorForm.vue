@@ -1,104 +1,9 @@
-<template>
-  <dialog ref="dialogRef" class="dialog-base dialog-base--bottom-sheet vendor-form" @cancel.prevent="close">
-    <div class="vendor-form__header">
-      <h2 class="vendor-form__title">{{ isEditMode ? 'Edit Vendor' : 'Add New Vendor' }}</h2>
-      <button class="btn btn--icon btn--icon-neutral" @click="close" aria-label="Close dialog">
-        <XIcon />
-      </button>
-    </div>
-
-    <form class="vendor-form__body" novalidate @submit.prevent="onSubmit">
-      <div class="vendor-form__field">
-        <label class="vendor-form__label" for="name">Name</label>
-        <input
-          id="name"
-          v-model="name"
-          type="text"
-          class="input-base vendor-form__input"
-          :class="{ 'input-base--invalid': nameError }"
-          :aria-invalid="nameError ? 'true' : undefined"
-          :aria-describedby="nameError ? 'name-error' : undefined"
-          placeholder="Company name"
-          required
-          autocomplete="organization"
-          @blur="() => validateName()"
-        />
-        <span v-if="nameError" :id="'name-error'" class="vendor-form__field-error" role="alert">
-          {{ nameError }}
-        </span>
-      </div>
-
-      <div class="vendor-form__field">
-        <label class="vendor-form__label" for="contactPerson">Contact Person</label>
-        <input
-          id="contactPerson"
-          v-model="contactPerson"
-          type="text"
-          class="input-base vendor-form__input"
-          :class="{ 'input-base--invalid': contactPersonError }"
-          :aria-invalid="contactPersonError ? 'true' : undefined"
-          :aria-describedby="contactPersonError ? 'contact-error' : undefined"
-          placeholder="Contact person name"
-          required
-          autocomplete="name"
-          @blur="() => validateContactPerson()"
-        />
-        <span v-if="contactPersonError" :id="'contact-error'" class="vendor-form__field-error" role="alert">
-          {{ contactPersonError }}
-        </span>
-      </div>
-
-      <div class="vendor-form__field">
-        <label class="vendor-form__label" for="email">Email</label>
-        <input
-          id="email"
-          v-model="email"
-          type="email"
-          class="input-base vendor-form__input"
-          :class="{ 'input-base--invalid': emailError || mutationError }"
-          :aria-invalid="emailError || mutationError ? 'true' : undefined"
-          :aria-describedby="emailError ? 'email-error' : mutationError ? 'form-error' : undefined"
-          placeholder="contact@example.com"
-          required
-          autocomplete="email"
-          @blur="() => validateEmail()"
-        />
-        <span v-if="emailError" :id="'email-error'" class="vendor-form__field-error" role="alert">
-          {{ emailError }}
-        </span>
-      </div>
-
-      <div class="vendor-form__field">
-        <label class="vendor-form__label" for="partnerType">Partner Type</label>
-        <BaseSelect
-          id="partnerType"
-          :model-value="partnerType"
-          :options="PARTNER_TYPES"
-          class="vendor-form__input"
-          @update:model-value="partnerType = $event as PartnerType /* safe: options are PARTNER_TYPES */"
-        />
-      </div>
-
-      <div v-if="mutationError" id="form-error" class="vendor-form__error" role="alert">
-        {{ mutationError }}
-      </div>
-
-      <div class="vendor-form__actions">
-        <button type="button" class="btn btn--outline" @click="close">Cancel</button>
-        <button type="submit" class="btn btn--primary" :disabled="isBusy">
-          {{ isBusy ? (isEditMode ? 'Saving...' : 'Adding...') : (isEditMode ? 'Save Changes' : 'Add Vendor') }}
-        </button>
-      </div>
-    </form>
-  </dialog>
-</template>
-
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue';
 import { useForm, useField } from 'vee-validate';
 import { useVendors } from '../composables/useVendors';
 import BaseSelect from './BaseSelect.vue';
-import XIcon from './icons/XIcon.vue';
+import XIcon from './Icons/XIcon.vue';
 import { PARTNER_TYPES } from '../types/Vendor';
 import type { Vendor, VendorInput, PartnerType } from '../types/Vendor';
 
@@ -107,11 +12,11 @@ const props = defineProps<{
   vendor?: Vendor | null;
 }>();
 
-const isEditMode = computed(() => !!props.vendor);
-
 const emit = defineEmits<{
   close: [];
 }>();
+
+const isEditMode = computed(() => !!props.vendor);
 
 const { createVendor, updateVendor } = useVendors();
 const dialogRef = ref<HTMLDialogElement | null>(null);
@@ -198,6 +103,157 @@ const onSubmit = handleSubmit(async (values) => {
   }
 });
 </script>
+
+<template>
+  <dialog
+    ref="dialogRef"
+    class="dialog-base dialog-base--bottom-sheet vendor-form"
+    @cancel.prevent="close"
+  >
+    <div class="vendor-form__header">
+      <h2 class="vendor-form__title">
+        {{ isEditMode ? 'Edit Vendor' : 'Add New Vendor' }}
+      </h2>
+      <button
+        class="btn btn--icon btn--icon-neutral"
+        aria-label="Close dialog"
+        @click="close"
+      >
+        <XIcon />
+      </button>
+    </div>
+
+    <form
+      class="vendor-form__body"
+      novalidate
+      @submit.prevent="onSubmit"
+    >
+      <div class="vendor-form__field">
+        <label
+          class="vendor-form__label"
+          for="name"
+        >Name</label>
+        <input
+          id="name"
+          v-model="name"
+          type="text"
+          class="input-base vendor-form__input"
+          :class="{ 'input-base--invalid': nameError }"
+          :aria-invalid="nameError ? 'true' : undefined"
+          :aria-describedby="nameError ? 'name-error' : undefined"
+          placeholder="Company name"
+          required
+          autocomplete="organization"
+          @blur="() => validateName()"
+        >
+        <span
+          v-if="nameError"
+          :id="'name-error'"
+          class="vendor-form__field-error"
+          role="alert"
+        >
+          {{ nameError }}
+        </span>
+      </div>
+
+      <div class="vendor-form__field">
+        <label
+          class="vendor-form__label"
+          for="contactPerson"
+        >Contact Person</label>
+        <input
+          id="contactPerson"
+          v-model="contactPerson"
+          type="text"
+          class="input-base vendor-form__input"
+          :class="{ 'input-base--invalid': contactPersonError }"
+          :aria-invalid="contactPersonError ? 'true' : undefined"
+          :aria-describedby="contactPersonError ? 'contact-error' : undefined"
+          placeholder="Contact person name"
+          required
+          autocomplete="name"
+          @blur="() => validateContactPerson()"
+        >
+        <span
+          v-if="contactPersonError"
+          :id="'contact-error'"
+          class="vendor-form__field-error"
+          role="alert"
+        >
+          {{ contactPersonError }}
+        </span>
+      </div>
+
+      <div class="vendor-form__field">
+        <label
+          class="vendor-form__label"
+          for="email"
+        >Email</label>
+        <input
+          id="email"
+          v-model="email"
+          type="email"
+          class="input-base vendor-form__input"
+          :class="{ 'input-base--invalid': emailError || mutationError }"
+          :aria-invalid="emailError || mutationError ? 'true' : undefined"
+          :aria-describedby="emailError ? 'email-error' : mutationError ? 'form-error' : undefined"
+          placeholder="contact@example.com"
+          required
+          autocomplete="email"
+          @blur="() => validateEmail()"
+        >
+        <span
+          v-if="emailError"
+          :id="'email-error'"
+          class="vendor-form__field-error"
+          role="alert"
+        >
+          {{ emailError }}
+        </span>
+      </div>
+
+      <div class="vendor-form__field">
+        <label
+          class="vendor-form__label"
+          for="partnerType"
+        >Partner Type</label>
+        <BaseSelect
+          id="partnerType"
+          :model-value="partnerType"
+          :options="PARTNER_TYPES"
+          class="vendor-form__input"
+          @update:model-value="partnerType = $event as PartnerType /* safe: options are PARTNER_TYPES */"
+        />
+      </div>
+
+      <div
+        v-if="mutationError"
+        id="form-error"
+        class="vendor-form__error"
+        role="alert"
+      >
+        {{ mutationError }}
+      </div>
+
+      <div class="vendor-form__actions">
+        <button
+          type="button"
+          class="btn btn--outline"
+          @click="close"
+        >
+          Cancel
+        </button>
+        <button
+          type="submit"
+          class="btn btn--primary"
+          :disabled="isBusy"
+        >
+          {{ isBusy ? (isEditMode ? 'Saving...' : 'Adding...') : (isEditMode ? 'Save Changes' : 'Add Vendor') }}
+        </button>
+      </div>
+    </form>
+  </dialog>
+</template>
 
 <style scoped>
 .vendor-form {

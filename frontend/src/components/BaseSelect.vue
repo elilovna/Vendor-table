@@ -1,16 +1,3 @@
-<template>
-  <select
-    :id="id"
-    class="input-base base-select"
-    :class="{ 'base-select--placeholder': modelValue === '' }"
-    :value="modelValue"
-    @change="$emit('update:modelValue', ($event.target as HTMLSelectElement).value)"
-  >
-    <option v-if="placeholder" value="">{{ placeholder }}</option>
-    <option v-for="opt in options" :key="opt" :value="opt">{{ opt }}</option>
-  </select>
-</template>
-
 <script setup lang="ts">
 defineProps<{
   modelValue: string;
@@ -23,6 +10,30 @@ defineEmits<{
   'update:modelValue': [value: string];
 }>();
 </script>
+
+<template>
+  <select
+    :id="id"
+    class="input-base base-select"
+    :class="{ 'base-select--placeholder': modelValue === '' }"
+    :value="modelValue"
+    @change="$emit('update:modelValue', ($event.target as HTMLSelectElement).value)"
+  >
+    <option
+      v-if="placeholder"
+      value=""
+    >
+      {{ placeholder }}
+    </option>
+    <option
+      v-for="opt in options"
+      :key="opt"
+      :value="opt"
+    >
+      {{ opt }}
+    </option>
+  </select>
+</template>
 
 <style scoped>
 .base-select {
