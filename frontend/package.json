@@ -11,7 +11,9 @@
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
     "lint": "eslint .",
-    "lint:fix": "eslint . --fix"
+    "lint:fix": "eslint . --fix",
+    "lint:css": "stylelint 'src/**/*.{css,vue}' --no-cache",
+    "lint:css:fix": "stylelint 'src/**/*.{css,vue}' --fix --no-cache"
   },
   "dependencies": {
     "@tanstack/vue-query": "^5.92.9",
@@ -29,6 +31,11 @@
     "eslint-plugin-vue": "^10.8.0",
     "globals": "^17.3.0",
     "happy-dom": "^20.7.0",
+    "postcss-html": "^1.8.1",
+    "stylelint": "^17.4.0",
+    "stylelint-config-standard": "^40.0.0",
+    "stylelint-config-standard-vue": "^1.0.0",
+    "stylelint-order": "^7.0.1",
     "typescript": "~5.9.3",
     "typescript-eslint": "^8.56.1",
     "vite": "^7.3.1",

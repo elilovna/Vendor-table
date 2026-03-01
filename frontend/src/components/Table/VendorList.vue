@@ -275,10 +275,10 @@ watch(partnerTypeFilter, (value) => {
 /* ── Container ── */
 
 .vendor-list {
-  background-color: var(--color-surface);
-  border-radius: var(--radius-md);
-  border: 1px solid var(--color-border);
   padding: var(--spacing-lg);
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
   box-shadow: var(--shadow-sm);
   animation: fade-in 0.3s ease;
   transition: background-color var(--transition-normal);
@@ -307,16 +307,16 @@ watch(partnerTypeFilter, (value) => {
 
 .vendor-list__search-icon {
   position: absolute;
-  left: var(--spacing-sm);
   top: 50%;
+  left: var(--spacing-sm);
   transform: translateY(-50%);
   color: var(--color-text-secondary);
   pointer-events: none;
 }
 
 .vendor-list__search-input {
-  width: 100%;
   padding: var(--spacing-input-y) var(--spacing-sm) var(--spacing-input-y) 40px;
+  width: 100%;
 }
 
 :deep(.base-select) {
@@ -335,9 +335,9 @@ watch(partnerTypeFilter, (value) => {
 
 .vendor-list__state {
   padding: var(--spacing-2xl) var(--spacing-lg);
+  font-size: var(--font-size-base);
   text-align: center;
   color: var(--color-text-secondary);
-  font-size: var(--font-size-base);
 }
 
 .vendor-list__state--error {
@@ -348,8 +348,8 @@ watch(partnerTypeFilter, (value) => {
 
 .vendor-table {
   width: 100%;
-  border-collapse: collapse;
   table-layout: fixed;
+  border-collapse: collapse;
 }
 
 .vendor-table__row {
@@ -369,12 +369,12 @@ watch(partnerTypeFilter, (value) => {
 
 .vendor-table__header {
   padding: var(--spacing-sm) var(--spacing-md);
-  text-align: left;
   font-size: var(--font-size-sm);
   font-weight: 600;
-  color: var(--color-text-secondary);
+  text-align: left;
   text-transform: uppercase;
   letter-spacing: 0.04em;
+  color: var(--color-text-secondary);
   border-bottom: 1px solid var(--color-border);
   user-select: none;
 }
@@ -405,13 +405,13 @@ watch(partnerTypeFilter, (value) => {
 
 .vendor-table__cell {
   padding: var(--spacing-md);
-  font-size: var(--font-size-base);
-  color: var(--color-text);
-  border-bottom: 1px solid var(--color-border);
-  vertical-align: middle;
   overflow: hidden;
+  vertical-align: middle;
+  font-size: var(--font-size-base);
   text-overflow: ellipsis;
   white-space: nowrap;
+  color: var(--color-text);
+  border-bottom: 1px solid var(--color-border);
 }
 
 :deep(.vendor-table__name) {

@@ -68,9 +68,9 @@ function closeForm(): void {
 
 <style scoped>
 .app {
-  min-height: 100vh;
   display: flex;
   flex-direction: column;
+  min-height: 100vh;
 }
 
 /* ── Header ── */
@@ -85,10 +85,10 @@ function closeForm(): void {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: var(--spacing-sm) var(--spacing-lg);
-  max-width: 1400px;
-  width: 100%;
   margin: 0 auto;
+  padding: var(--spacing-sm) var(--spacing-lg);
+  width: 100%;
+  max-width: 1400px;
 }
 
 .app__brand {
@@ -98,16 +98,16 @@ function closeForm(): void {
 }
 
 .app__logo {
-  width: 32px;
-  height: 32px;
-  border-radius: var(--radius-md);
-  background-color: var(--color-primary);
-  color: var(--color-primary-foreground);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: 700;
+  width: 32px;
+  height: 32px;
   font-size: var(--font-size-base);
+  font-weight: 700;
+  color: var(--color-primary-foreground);
+  background-color: var(--color-primary);
+  border-radius: var(--radius-md);
 }
 
 .app__title {
@@ -117,17 +117,17 @@ function closeForm(): void {
 }
 
 .app__theme-toggle {
-  width: 40px;
-  height: 40px;
-  border-radius: var(--radius-md);
-  border: 1px solid var(--color-border);
-  background: var(--color-surface);
-  color: var(--color-text);
-  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
+  width: 40px;
+  height: 40px;
+  color: var(--color-text);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
   transition: background-color var(--transition-fast), border-color var(--transition-fast);
+  cursor: pointer;
 }
 
 .app__theme-toggle:hover {
@@ -139,10 +139,10 @@ function closeForm(): void {
 
 .app__main {
   flex: 1;
-  padding: var(--spacing-xl) var(--spacing-lg);
-  max-width: 1400px;
-  width: 100%;
   margin: 0 auto;
+  padding: var(--spacing-xl) var(--spacing-lg);
+  width: 100%;
+  max-width: 1400px;
 }
 
 @media (min-width: 768px) {
