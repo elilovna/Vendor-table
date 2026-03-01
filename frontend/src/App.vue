@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import VendorForm from './components/VendorForm.vue';
-import VendorList from './components/table/VendorList.vue';
+import VendorList from './components/Table/VendorList.vue';
 import SunIcon from './components/icons/SunIcon.vue';
 import MoonIcon from './components/icons/MoonIcon.vue';
 import { useDarkMode } from './composables/useDarkMode';
@@ -32,13 +32,17 @@ function closeForm(): void {
     <header class="app__header">
       <div class="app__header-content">
         <div class="app__brand">
-          <div class="app__logo">V</div>
-          <h1 class="app__title">Vendor Management</h1>
+          <div class="app__logo">
+            V
+          </div>
+          <h1 class="app__title">
+            Vendor Management
+          </h1>
         </div>
         <button
           class="app__theme-toggle"
-          @click="toggle"
           :aria-label="isDark ? 'Switch to light mode' : 'Switch to dark mode'"
+          @click="toggle"
         >
           <SunIcon v-if="isDark" />
           <MoonIcon v-else />
@@ -47,10 +51,17 @@ function closeForm(): void {
     </header>
 
     <main class="app__main">
-      <VendorList @add-vendor="openAddForm" @edit-vendor="openEditForm" />
+      <VendorList
+        @add-vendor="openAddForm"
+        @edit-vendor="openEditForm"
+      />
     </main>
 
-    <VendorForm :open="showVendorForm" :vendor="vendorToEdit" @close="closeForm" />
+    <VendorForm
+      :open="showVendorForm"
+      :vendor="vendorToEdit"
+      @close="closeForm"
+    />
   </div>
 </template>
 

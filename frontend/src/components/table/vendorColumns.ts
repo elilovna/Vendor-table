@@ -1,12 +1,13 @@
 import { h } from 'vue'
 import { createColumnHelper } from '@tanstack/vue-table'
 import type { ColumnDef, RowData } from '@tanstack/vue-table'
-import PencilIcon from '../icons/PencilIcon.vue'
-import TrashIcon from '../icons/TrashIcon.vue'
-import EyeIcon from '../icons/EyeIcon.vue'
+import PencilIcon from '../Icons/PencilIcon.vue'
+import TrashIcon from '../Icons/TrashIcon.vue'
+import EyeIcon from '../Icons/EyeIcon.vue'
 import type { Vendor } from '../../types/Vendor'
 
 declare module '@tanstack/vue-table' {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars -- generic params required by module augmentation
   interface ColumnMeta<TData extends RowData, TValue = unknown> {
     class?: string
   }
@@ -20,6 +21,7 @@ interface VendorColumnCallbacks {
 
 const columnHelper = createColumnHelper<Vendor>()
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- TanStack Table ColumnDef requires generic value type
 export function createVendorColumns(callbacks: VendorColumnCallbacks): ColumnDef<Vendor, any>[] {
   return [
     columnHelper.accessor('name', {

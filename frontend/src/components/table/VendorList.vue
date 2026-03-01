@@ -1,108 +1,3 @@
-<template>
-  <section class="vendor-list">
-    <!-- Toolbar: Search + Filters + Add Button -->
-    <div class="vendor-list__toolbar">
-      <div class="vendor-list__toolbar-left">
-        <div class="vendor-list__search">
-          <SearchIcon class="vendor-list__search-icon" />
-          <label for="vendor-search" class="sr-only">Search vendors</label>
-          <input
-            id="vendor-search"
-            v-model="searchQuery"
-            type="text"
-            class="input-base vendor-list__search-input"
-            placeholder="Search vendors..."
-          />
-        </div>
-        <label for="type-filter" class="sr-only">Filter by partner type</label>
-        <BaseSelect
-          id="type-filter"
-          :model-value="partnerTypeFilter ?? ''"
-          :options="PARTNER_TYPES"
-          placeholder="All Types"
-          @update:model-value="handleFilterChange"
-        />
-      </div>
-      <button class="btn btn--primary vendor-list__add-btn" @click="emit('addVendor')">
-        <PlusIcon />
-        Add Vendor
-      </button>
-    </div>
-
-    <!-- Loading State -->
-    <div v-if="isLoading" class="vendor-list__state">Loading vendors...</div>
-
-    <!-- Error State -->
-    <div v-else-if="error" class="vendor-list__state vendor-list__state--error">
-      {{ error.message }}
-    </div>
-
-    <!-- Empty State -->
-    <div v-else-if="hasNoVendors" class="vendor-list__state">
-      No vendors found. Add your first vendor!
-    </div>
-
-    <!-- No search results -->
-    <div v-else-if="hasNoResults" class="vendor-list__state">
-      No vendors match your search.
-    </div>
-
-    <table v-else class="vendor-table" aria-label="Registered vendors">
-      <thead>
-        <tr v-for="headerGroup in table.getHeaderGroups()" :key="headerGroup.id">
-          <th
-            v-for="header in headerGroup.headers"
-            :key="header.id"
-            class="vendor-table__header"
-            :class="[
-              header.column.getCanSort() ? 'vendor-table__header--sortable' : '',
-              header.column.columnDef.meta?.class ?? '',
-            ]"
-            @click="header.column.getToggleSortingHandler()?.($event)"
-          >
-            <FlexRender :render="header.column.columnDef.header" :props="header.getContext()" />
-            <span v-if="header.column.getIsSorted() === 'asc'" class="vendor-table__sort-indicator" aria-label="Sorted ascending"> &#8593;</span>
-            <span v-else-if="header.column.getIsSorted() === 'desc'" class="vendor-table__sort-indicator" aria-label="Sorted descending"> &#8595;</span>
-            <span v-else-if="header.column.getCanSort()" class="vendor-table__sort-indicator vendor-table__sort-indicator--idle" aria-label="Sortable"> &#8597;</span>
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr
-          v-for="row in table.getRowModel().rows"
-          :key="row.id"
-          class="vendor-table__row"
-        >
-          <td
-            v-for="cell in row.getVisibleCells()"
-            :key="cell.id"
-            class="vendor-table__cell"
-            :class="cell.column.columnDef.meta?.class ?? ''"
-          >
-            <FlexRender :render="cell.column.columnDef.cell" :props="cell.getContext()" />
-          </td>
-        </tr>
-      </tbody>
-    </table>
-
-    <VendorDetailPanel
-      :vendor="selectedVendor"
-      @close="selectedVendor = null"
-      @edit="handleDetailEdit"
-      @delete="handleDetailDelete"
-    />
-
-    <ConfirmDialog
-      title="Delete Vendor"
-      :open="showDeleteDialog"
-      :message="`Are you sure you want to delete '${vendorToDelete?.name}'? This action cannot be undone.`"
-      :error="deleteError"
-      @confirm="handleDelete"
-      @cancel="cancelDelete"
-    />
-  </section>
-</template>
-
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import {
@@ -119,8 +14,8 @@ import { createVendorColumns } from './vendorColumns'
 import BaseSelect from '../BaseSelect.vue'
 import ConfirmDialog from '../ConfirmDialog.vue'
 import VendorDetailPanel from '../VendorDetailPanel.vue'
-import SearchIcon from '../icons/SearchIcon.vue'
-import PlusIcon from '../icons/PlusIcon.vue'
+import SearchIcon from '../Icons/SearchIcon.vue'
+import PlusIcon from '../Icons/PlusIcon.vue'
 import { PARTNER_TYPES } from '../../types/Vendor'
 import type { Vendor, PartnerType } from '../../types/Vendor'
 
@@ -217,6 +112,159 @@ const table = useVueTable({
   getFilteredRowModel: getFilteredRowModel(),
 })
 </script>
+
+<template>
+  <section class="vendor-list">
+    <!-- Toolbar: Search + Filters + Add Button -->
+    <div class="vendor-list__toolbar">
+      <div class="vendor-list__toolbar-left">
+        <div class="vendor-list__search">
+          <SearchIcon class="vendor-list__search-icon" />
+          <label
+            for="vendor-search"
+            class="sr-only"
+          >Search vendors</label>
+          <input
+            id="vendor-search"
+            v-model="searchQuery"
+            type="text"
+            class="input-base vendor-list__search-input"
+            placeholder="Search vendors..."
+          >
+        </div>
+        <label
+          for="type-filter"
+          class="sr-only"
+        >Filter by partner type</label>
+        <BaseSelect
+          id="type-filter"
+          :model-value="partnerTypeFilter ?? ''"
+          :options="PARTNER_TYPES"
+          placeholder="All Types"
+          @update:model-value="handleFilterChange"
+        />
+      </div>
+      <button
+        class="btn btn--primary vendor-list__add-btn"
+        @click="emit('addVendor')"
+      >
+        <PlusIcon />
+        Add Vendor
+      </button>
+    </div>
+
+    <!-- Loading State -->
+    <div
+      v-if="isLoading"
+      class="vendor-list__state"
+    >
+      Loading vendors...
+    </div>
+
+    <!-- Error State -->
+    <div
+      v-else-if="error"
+      class="vendor-list__state vendor-list__state--error"
+    >
+      {{ error.message }}
+    </div>
+
+    <!-- Empty State -->
+    <div
+      v-else-if="hasNoVendors"
+      class="vendor-list__state"
+    >
+      No vendors found. Add your first vendor!
+    </div>
+
+    <!-- No search results -->
+    <div
+      v-else-if="hasNoResults"
+      class="vendor-list__state"
+    >
+      No vendors match your search.
+    </div>
+
+    <table
+      v-else
+      class="vendor-table"
+      aria-label="Registered vendors"
+    >
+      <thead>
+        <tr
+          v-for="headerGroup in table.getHeaderGroups()"
+          :key="headerGroup.id"
+        >
+          <th
+            v-for="header in headerGroup.headers"
+            :key="header.id"
+            class="vendor-table__header"
+            :class="[
+              header.column.getCanSort() ? 'vendor-table__header--sortable' : '',
+              header.column.columnDef.meta?.class ?? '',
+            ]"
+            @click="header.column.getToggleSortingHandler()?.($event)"
+          >
+            <FlexRender
+              :render="header.column.columnDef.header"
+              :props="header.getContext()"
+            />
+            <span
+              v-if="header.column.getIsSorted() === 'asc'"
+              class="vendor-table__sort-indicator"
+              aria-label="Sorted ascending"
+            > &#8593;</span>
+            <span
+              v-else-if="header.column.getIsSorted() === 'desc'"
+              class="vendor-table__sort-indicator"
+              aria-label="Sorted descending"
+            > &#8595;</span>
+            <span
+              v-else-if="header.column.getCanSort()"
+              class="vendor-table__sort-indicator vendor-table__sort-indicator--idle"
+              aria-label="Sortable"
+            > &#8597;</span>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr
+          v-for="row in table.getRowModel().rows"
+          :key="row.id"
+          class="vendor-table__row"
+        >
+          <td
+            v-for="cell in row.getVisibleCells()"
+            :key="cell.id"
+            class="vendor-table__cell"
+            :class="cell.column.columnDef.meta?.class ?? ''"
+          >
+            <FlexRender
+              :render="cell.column.columnDef.cell"
+              :props="cell.getContext()"
+            />
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <VendorDetailPanel
+      :vendor="selectedVendor"
+      @close="selectedVendor = null"
+      @edit="handleDetailEdit"
+      @delete="handleDetailDelete"
+    />
+
+    <ConfirmDialog
+      title="Delete Vendor"
+      :open="showDeleteDialog"
+      :message="`Are you sure you want to delete '${vendorToDelete?.name}'? This action cannot be undone.`"
+      :error="deleteError"
+      @confirm="handleDelete"
+      @cancel="cancelDelete"
+    />
+  </section>
+</template>
 
 <style scoped>
 /* ── Card Container ── */

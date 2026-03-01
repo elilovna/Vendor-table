@@ -1,49 +1,8 @@
-<template>
-  <dialog ref="dialogRef" class="dialog-base vendor-detail" @cancel.prevent="emit('close')">
-    <div class="vendor-detail__header">
-      <h3 class="vendor-detail__title">{{ vendor?.name }}</h3>
-      <button class="btn btn--icon btn--icon-neutral" aria-label="Close details" @click="emit('close')">
-        <XIcon />
-      </button>
-    </div>
-
-    <dl class="vendor-detail__fields">
-      <div class="vendor-detail__field">
-        <dt class="vendor-detail__label">Contact Person</dt>
-        <dd class="vendor-detail__value">{{ vendor?.contact_person }}</dd>
-      </div>
-      <div class="vendor-detail__field">
-        <dt class="vendor-detail__label">Email</dt>
-        <dd class="vendor-detail__value">{{ vendor?.email }}</dd>
-      </div>
-      <div class="vendor-detail__field">
-        <dt class="vendor-detail__label">Partner Type</dt>
-        <dd class="vendor-detail__value">
-          <span v-if="vendor" :class="`badge ${vendor.partner_type === 'Partner' ? 'badge--partner' : 'badge--supplier'}`">
-            {{ vendor.partner_type }}
-          </span>
-        </dd>
-      </div>
-    </dl>
-
-    <div class="vendor-detail__actions">
-      <button class="btn btn--outline vendor-detail__btn" @click="vendor && emit('edit', vendor)">
-        <PencilIcon />
-        Edit
-      </button>
-      <button class="btn btn--danger vendor-detail__btn" @click="vendor && emit('delete', vendor)">
-        <TrashIcon />
-        Delete
-      </button>
-    </div>
-  </dialog>
-</template>
-
 <script setup lang="ts">
 import { ref, watch } from 'vue'
-import XIcon from './icons/XIcon.vue'
-import PencilIcon from './icons/PencilIcon.vue'
-import TrashIcon from './icons/TrashIcon.vue'
+import XIcon from './Icons/XIcon.vue'
+import PencilIcon from './Icons/PencilIcon.vue'
+import TrashIcon from './Icons/TrashIcon.vue'
 import type { Vendor } from '../types/Vendor'
 
 const props = defineProps<{
@@ -72,6 +31,76 @@ watch(() => props.vendor, (vendor) => {
   }
 })
 </script>
+
+<template>
+  <dialog
+    ref="dialogRef"
+    class="dialog-base vendor-detail"
+    @cancel.prevent="emit('close')"
+  >
+    <div class="vendor-detail__header">
+      <h3 class="vendor-detail__title">
+        {{ vendor?.name }}
+      </h3>
+      <button
+        class="btn btn--icon btn--icon-neutral"
+        aria-label="Close details"
+        @click="emit('close')"
+      >
+        <XIcon />
+      </button>
+    </div>
+
+    <dl class="vendor-detail__fields">
+      <div class="vendor-detail__field">
+        <dt class="vendor-detail__label">
+          Contact Person
+        </dt>
+        <dd class="vendor-detail__value">
+          {{ vendor?.contact_person }}
+        </dd>
+      </div>
+      <div class="vendor-detail__field">
+        <dt class="vendor-detail__label">
+          Email
+        </dt>
+        <dd class="vendor-detail__value">
+          {{ vendor?.email }}
+        </dd>
+      </div>
+      <div class="vendor-detail__field">
+        <dt class="vendor-detail__label">
+          Partner Type
+        </dt>
+        <dd class="vendor-detail__value">
+          <span
+            v-if="vendor"
+            :class="`badge ${vendor.partner_type === 'Partner' ? 'badge--partner' : 'badge--supplier'}`"
+          >
+            {{ vendor.partner_type }}
+          </span>
+        </dd>
+      </div>
+    </dl>
+
+    <div class="vendor-detail__actions">
+      <button
+        class="btn btn--outline vendor-detail__btn"
+        @click="vendor && emit('edit', vendor)"
+      >
+        <PencilIcon />
+        Edit
+      </button>
+      <button
+        class="btn btn--danger vendor-detail__btn"
+        @click="vendor && emit('delete', vendor)"
+      >
+        <TrashIcon />
+        Delete
+      </button>
+    </div>
+  </dialog>
+</template>
 
 <style scoped>
 .vendor-detail {
