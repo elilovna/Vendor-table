@@ -1,7 +1,9 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { mount, flushPromises } from '@vue/test-utils';
 import { QueryClient, VueQueryPlugin } from '@tanstack/vue-query';
+import { createRouter, createMemoryHistory } from 'vue-router';
 import VendorList from '@/components/Table/VendorList.vue';
+import ConfirmDialog from '@/components/ConfirmDialog.vue';
 import { VendorService } from '@/services/VendorService';
 import type { Vendor } from '@/types/Vendor';
 
@@ -23,10 +25,20 @@ function createQueryClient(): QueryClient {
   });
 }
 
+function createTestRouter() {
+  return createRouter({
+    history: createMemoryHistory(),
+    routes: [{ path: '/', component: { render: () => null } }],
+  });
+}
+
 function mountList() {
   return mount(VendorList, {
     global: {
-      plugins: [[VueQueryPlugin, { queryClient: createQueryClient() }]],
+      plugins: [
+        [VueQueryPlugin, { queryClient: createQueryClient() }],
+        createTestRouter(),
+      ],
     },
   });
 }
@@ -215,7 +227,8 @@ describe('VendorList', () => {
       await deleteButtons[0].trigger('click');
       await flushPromises();
 
-      expect(wrapper.findComponent({ name: 'ConfirmDialog' }).props('open')).toBe(true);
+      expect(wrapper.find('.confirm-dialog').exists()).toBe(true);
+      expect(wrapper.text()).toContain('Delete Vendor');
     });
 
     it('calls deleteVendor service when delete is confirmed', async () => {
@@ -229,8 +242,7 @@ describe('VendorList', () => {
       await deleteButtons[0].trigger('click');
       await flushPromises();
 
-      const confirmDialog = wrapper.findComponent({ name: 'ConfirmDialog' });
-      confirmDialog.vm.$emit('confirm');
+      wrapper.findComponent(ConfirmDialog).vm.$emit('confirm');
       await flushPromises();
 
       // useVendors reverses the array, so first row is last mock vendor
