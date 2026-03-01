@@ -1,0 +1,25 @@
+services:
+  frontend:
+    build: ./frontend
+    ports:
+      - "8080:80"
+    depends_on:
+      backend:
+        condition: service_started
+
+  backend:
+    build: ./backend-node
+    environment:
+      - PORT=3000
+      - CORS_ORIGIN=http://localhost:8080
+      - DB_PATH=/app/data/vendors.db
+    volumes:
+      - vendor-data:/app/data
+    healthcheck:
+      test: ["CMD", "bun", "-e", "fetch('http://localhost:3000/health').then(r => r.ok ? process.exit(0) : process.exit(1)).catch(() => process.exit(1))"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+volumes:
+  vendor-data:
