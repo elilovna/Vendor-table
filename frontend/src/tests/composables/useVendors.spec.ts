@@ -2,11 +2,11 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { flushPromises } from '@vue/test-utils';
 import { QueryClient, VueQueryPlugin } from '@tanstack/vue-query';
 import { createApp, defineComponent } from 'vue';
-import { useVendors } from '../../composables/useVendors';
-import { VendorService } from '../../services/VendorService';
-import type { Vendor, VendorInput } from '../../types/Vendor';
+import { useVendors } from '@/composables/useVendors';
+import { VendorService } from '@/services/VendorService';
+import type { Vendor, VendorInput } from '@/types/Vendor';
 
-vi.mock('../../services/VendorService', () => ({
+vi.mock('@/services/VendorService', () => ({
   VendorService: {
     getVendors: vi.fn(),
     createVendor: vi.fn(),

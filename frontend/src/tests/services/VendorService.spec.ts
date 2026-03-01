@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import type { Vendor, VendorInput } from '../../types/Vendor';
+import type { Vendor, VendorInput } from '@/types/Vendor';
 
 const mockFetch = vi.fn();
 vi.stubGlobal('fetch', mockFetch);

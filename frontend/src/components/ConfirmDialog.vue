@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import AlertCircleIcon from './Icons/AlertCircleIcon.vue';
-import { useDialog } from '../composables/useDialog';
+import AlertCircleIcon from '@/components/Icons/AlertCircleIcon.vue';
+import { useDialog } from '@/composables/useDialog';
 
 const props = defineProps<{
   open: boolean;

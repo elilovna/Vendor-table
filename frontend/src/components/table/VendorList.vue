@@ -9,15 +9,15 @@ import {
   type SortingState,
   type Updater,
 } from '@tanstack/vue-table'
-import { useVendors } from '../../composables/useVendors'
-import { createVendorColumns } from './vendorColumns'
-import BaseSelect from '../BaseSelect.vue'
-import ConfirmDialog from '../ConfirmDialog.vue'
-import VendorDetailPanel from '../VendorDetailPanel.vue'
-import SearchIcon from '../Icons/SearchIcon.vue'
-import PlusIcon from '../Icons/PlusIcon.vue'
-import { PARTNER_TYPES } from '../../types/Vendor'
-import type { Vendor, PartnerType } from '../../types/Vendor'
+import { useVendors } from '@/composables/useVendors'
+import { createVendorColumns } from '@/components/Table/vendorColumns'
+import BaseSelect from '@/components/BaseSelect.vue'
+import ConfirmDialog from '@/components/ConfirmDialog.vue'
+import VendorDetailPanel from '@/components/VendorDetailPanel.vue'
+import SearchIcon from '@/components/Icons/SearchIcon.vue'
+import PlusIcon from '@/components/Icons/PlusIcon.vue'
+import { PARTNER_TYPES } from '@/types/Vendor'
+import type { Vendor, PartnerType } from '@/types/Vendor'
 
 const emit = defineEmits<{
   addVendor: []
@@ -37,6 +37,7 @@ const hasNoVendors = computed(() => vendors.value.length === 0)
 const hasNoResults = computed(() => table.getRowModel().rows.length === 0)
 
 function handleFilterChange(value: string): void {
+  // Safe cast: BaseSelect options are constrained to PARTNER_TYPES
   partnerTypeFilter.value = value ? value as PartnerType : null
   table.getColumn('partner_type')?.setFilterValue(partnerTypeFilter.value ?? undefined)
 }

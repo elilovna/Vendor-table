@@ -1,10 +1,10 @@
 import { h } from 'vue'
 import { createColumnHelper } from '@tanstack/vue-table'
 import type { ColumnDef, RowData } from '@tanstack/vue-table'
-import PencilIcon from '../Icons/PencilIcon.vue'
-import TrashIcon from '../Icons/TrashIcon.vue'
-import EyeIcon from '../Icons/EyeIcon.vue'
-import type { Vendor } from '../../types/Vendor'
+import PencilIcon from '@/components/Icons/PencilIcon.vue'
+import TrashIcon from '@/components/Icons/TrashIcon.vue'
+import EyeIcon from '@/components/Icons/EyeIcon.vue'
+import type { Vendor } from '@/types/Vendor'
 
 declare module '@tanstack/vue-table' {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars -- generic params required by module augmentation

@@ -1,11 +1,11 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { mount, flushPromises } from '@vue/test-utils';
 import { QueryClient, VueQueryPlugin } from '@tanstack/vue-query';
-import VendorForm from '../../components/VendorForm.vue';
-import { VendorService } from '../../services/VendorService';
-import type { Vendor } from '../../types/Vendor';
+import VendorForm from '@/components/VendorForm.vue';
+import { VendorService } from '@/services/VendorService';
+import type { Vendor } from '@/types/Vendor';
 
-vi.mock('../../services/VendorService', () => ({
+vi.mock('@/services/VendorService', () => ({
   VendorService: {
     getVendors: vi.fn(),
     createVendor: vi.fn(),

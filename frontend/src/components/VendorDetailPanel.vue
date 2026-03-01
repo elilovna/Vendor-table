@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import XIcon from './Icons/XIcon.vue'
-import PencilIcon from './Icons/PencilIcon.vue'
-import TrashIcon from './Icons/TrashIcon.vue'
-import type { Vendor } from '../types/Vendor'
-import { useDialog } from '../composables/useDialog'
+import XIcon from '@/components/Icons/XIcon.vue'
+import PencilIcon from '@/components/Icons/PencilIcon.vue'
+import TrashIcon from '@/components/Icons/TrashIcon.vue'
+import type { Vendor } from '@/types/Vendor'
+import { useDialog } from '@/composables/useDialog'
 
 const props = defineProps<{
   vendor: Vendor | null
