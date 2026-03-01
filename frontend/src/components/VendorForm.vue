@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue';
+import { computed, watch } from 'vue';
 import { useForm, useField } from 'vee-validate';
 import { useVendors } from '../composables/useVendors';
+import { useDialog } from '../composables/useDialog';
 import BaseSelect from './BaseSelect.vue';
 import XIcon from './Icons/XIcon.vue';
 import { PARTNER_TYPES } from '../types/Vendor';
@@ -19,10 +20,9 @@ const emit = defineEmits<{
 const isEditMode = computed(() => !!props.vendor);
 
 const { createVendor, updateVendor } = useVendors();
-const dialogRef = ref<HTMLDialogElement | null>(null);
+const { dialogRef, openDialog, closeDialog } = useDialog();
 const isBusy = computed(() => createVendor.isPending.value || updateVendor.isPending.value);
 const mutationError = computed(() => createVendor.error.value?.message ?? updateVendor.error.value?.message ?? null);
-const triggerElement = ref<Element | null>(null);
 
 function requiredValidator(value: unknown): string | true {
   if (!value || (typeof value === 'string' && value.trim().length === 0)) {
@@ -55,31 +55,19 @@ const { value: contactPerson, errorMessage: contactPersonError, validate: valida
 const { value: email, errorMessage: emailError, validate: validateEmail } = useField<string>('email', emailValidator);
 const { value: partnerType } = useField<PartnerType>('partner_type');
 
-function openDialog(): void {
-  createVendor.reset();
-  updateVendor.reset();
-  resetForm();
-  if (props.vendor) {
-    setValues({
-      name: props.vendor.name,
-      contact_person: props.vendor.contact_person,
-      email: props.vendor.email,
-      partner_type: props.vendor.partner_type,
-    });
-  }
-  triggerElement.value = document.activeElement;
-  dialogRef.value?.showModal();
-}
-
-function closeDialog(): void {
-  dialogRef.value?.close();
-  if (triggerElement.value instanceof HTMLElement) {
-    triggerElement.value.focus();
-  }
-}
-
 watch(() => props.open, (isOpen) => {
   if (isOpen) {
+    createVendor.reset();
+    updateVendor.reset();
+    resetForm();
+    if (props.vendor) {
+      setValues({
+        name: props.vendor.name,
+        contact_person: props.vendor.contact_person,
+        email: props.vendor.email,
+        partner_type: props.vendor.partner_type,
+      });
+    }
     openDialog();
   } else {
     closeDialog();
@@ -148,7 +136,7 @@ const onSubmit = handleSubmit(async (values) => {
         >
         <span
           v-if="nameError"
-          :id="'name-error'"
+          id="name-error"
           class="vendor-form__field-error"
           role="alert"
         >
@@ -176,7 +164,7 @@ const onSubmit = handleSubmit(async (values) => {
         >
         <span
           v-if="contactPersonError"
-          :id="'contact-error'"
+          id="contact-error"
           class="vendor-form__field-error"
           role="alert"
         >
@@ -204,7 +192,7 @@ const onSubmit = handleSubmit(async (values) => {
         >
         <span
           v-if="emailError"
-          :id="'email-error'"
+          id="email-error"
           class="vendor-form__field-error"
           role="alert"
         >
@@ -258,9 +246,11 @@ const onSubmit = handleSubmit(async (values) => {
 <style scoped>
 .vendor-form {
   padding: 0;
-  max-width: 480px;
-  width: 90%;
-  animation: scale-in 0.2s ease;
+  max-width: 100%;
+  width: 100%;
+  max-height: 85vh;
+  overflow-y: auto;
+  animation: slide-up 0.25s ease;
 }
 
 /* ── Header ── */
@@ -324,15 +314,13 @@ const onSubmit = handleSubmit(async (values) => {
   margin-top: var(--spacing-lg);
 }
 
-/* ── Mobile: bottom sheet ── */
-
-@media (max-width: 767px) {
+@media (min-width: 768px) {
   .vendor-form {
-    max-width: 100%;
-    width: 100%;
-    max-height: 85vh;
-    overflow-y: auto;
-    animation: slide-up 0.25s ease;
+    max-width: 30rem;
+    width: 90%;
+    max-height: none;
+    overflow-y: visible;
+    animation: scale-in 0.2s ease;
   }
 }
 </style>

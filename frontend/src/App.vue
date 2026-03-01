@@ -2,8 +2,8 @@
 import { ref } from 'vue';
 import VendorForm from './components/VendorForm.vue';
 import VendorList from './components/Table/VendorList.vue';
-import SunIcon from './components/icons/SunIcon.vue';
-import MoonIcon from './components/icons/MoonIcon.vue';
+import SunIcon from './components/Icons/SunIcon.vue';
+import MoonIcon from './components/Icons/MoonIcon.vue';
 import { useDarkMode } from './composables/useDarkMode';
 import type { Vendor } from './types/Vendor';
 

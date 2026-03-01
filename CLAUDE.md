@@ -54,7 +54,6 @@ Frontend is the primary showcase. Backend should be correct but not over-enginee
 - Error messages linked with `aria-describedby`, fields marked `aria-invalid`
 - Focus management: return focus to trigger after modal close
 - Visible `:focus-visible` styles on all interactive elements
-- Respect `prefers-reduced-motion`
 
 ---
 

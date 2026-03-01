@@ -6,6 +6,7 @@
     "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
     "build": "tsc",
     "start": "node dist/index.js",
+    "test": "bun test",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix"
   },
@@ -14,7 +15,6 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "body-parser": "^2.2.2",
     "cors": "^2.8.6",
     "express": "^5.2.1",
     "sqlite3": "^5.1.7"

@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue'
 import XIcon from './Icons/XIcon.vue'
 import PencilIcon from './Icons/PencilIcon.vue'
 import TrashIcon from './Icons/TrashIcon.vue'
 import type { Vendor } from '../types/Vendor'
+import { useDialog } from '../composables/useDialog'
 
 const props = defineProps<{
   vendor: Vendor | null
@@ -15,21 +15,7 @@ const emit = defineEmits<{
   delete: [vendor: Vendor]
 }>()
 
-const dialogRef = ref<HTMLDialogElement | null>(null)
-const triggerElement = ref<Element | null>(null)
-
-watch(() => props.vendor, (vendor) => {
-  if (vendor) {
-    triggerElement.value = document.activeElement
-    dialogRef.value?.showModal()
-  } else {
-    dialogRef.value?.close()
-    if (triggerElement.value instanceof HTMLElement) {
-      triggerElement.value.focus()
-    }
-    triggerElement.value = null
-  }
-})
+const { dialogRef } = useDialog(() => !!props.vendor)
 </script>
 
 <template>

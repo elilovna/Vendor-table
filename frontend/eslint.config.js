@@ -62,6 +62,7 @@ export default tseslint.config(
       'vue/component-api-style': ['error', ['script-setup']],
       'vue/define-props-declaration': ['error', 'type-based'],
       'vue/define-emits-declaration': ['error', 'type-based'],
+      'vue/require-typed-ref': 'error',
       'vue/multi-word-component-names': [
         'error',
         {

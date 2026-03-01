@@ -49,9 +49,10 @@ describe('VendorService', () => {
       mockFetch.mockResolvedValue({
         ok: false,
         status: 500,
+        json: () => Promise.resolve({ error: 'Internal server error' }),
       });
 
-      await expect(VendorService.getVendors()).rejects.toThrow('HTTP error! status: 500');
+      await expect(VendorService.getVendors()).rejects.toThrow('Internal server error');
     });
 
     it('should throw on network error', async () => {
@@ -99,13 +100,14 @@ describe('VendorService', () => {
       await expect(VendorService.createVendor(newVendor)).rejects.toThrow('Email already exists');
     });
 
-    it('should throw generic error on other non-ok responses', async () => {
+    it('should throw with server error message on other non-ok responses', async () => {
       mockFetch.mockResolvedValue({
         ok: false,
         status: 400,
+        json: () => Promise.resolve({ error: 'Validation failed' }),
       });
 
-      await expect(VendorService.createVendor(newVendor)).rejects.toThrow('HTTP error! status: 400');
+      await expect(VendorService.createVendor(newVendor)).rejects.toThrow('Validation failed');
     });
   });
 
@@ -146,13 +148,14 @@ describe('VendorService', () => {
       await expect(VendorService.updateVendor(1, updatedVendor)).rejects.toThrow('Email already exists');
     });
 
-    it('should throw generic error on other non-ok responses', async () => {
+    it('should throw with server error message on other non-ok responses', async () => {
       mockFetch.mockResolvedValue({
         ok: false,
         status: 500,
+        json: () => Promise.resolve({ error: 'Internal server error' }),
       });
 
-      await expect(VendorService.updateVendor(1, updatedVendor)).rejects.toThrow('HTTP error! status: 500');
+      await expect(VendorService.updateVendor(1, updatedVendor)).rejects.toThrow('Internal server error');
     });
   });
 
@@ -172,9 +175,10 @@ describe('VendorService', () => {
       mockFetch.mockResolvedValue({
         ok: false,
         status: 404,
+        json: () => Promise.resolve({ error: 'Vendor not found' }),
       });
 
-      await expect(VendorService.deleteVendor(999)).rejects.toThrow('HTTP error! status: 404');
+      await expect(VendorService.deleteVendor(999)).rejects.toThrow('Vendor not found');
     });
 
     it('should throw on network error', async () => {
