@@ -1,7 +1,7 @@
 import { computed, type ComputedRef } from 'vue'
 import { useQuery, useMutation, useQueryClient, type UseMutationReturnType } from '@tanstack/vue-query'
-import { VendorService } from '../services/VendorService'
-import type { Vendor, VendorInput } from '../types/Vendor'
+import { VendorService } from '@/services/VendorService'
+import type { Vendor, VendorInput } from '@/types/Vendor'
 
 const VENDORS_KEY = ['vendors'] as const
 

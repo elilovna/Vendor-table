@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { mount } from '@vue/test-utils';
-import VendorDetailPanel from '../../components/VendorDetailPanel.vue';
-import type { Vendor } from '../../types/Vendor';
+import VendorDetailPanel from '@/components/VendorDetailPanel.vue';
+import type { Vendor } from '@/types/Vendor';
 
 describe('VendorDetailPanel', () => {
   const mockVendor: Vendor = {

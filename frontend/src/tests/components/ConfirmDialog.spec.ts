@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { mount } from '@vue/test-utils';
-import ConfirmDialog from '../../components/ConfirmDialog.vue';
+import ConfirmDialog from '@/components/ConfirmDialog.vue';
 
 describe('ConfirmDialog', () => {
   const defaultProps = {

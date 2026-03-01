@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { mount } from '@vue/test-utils';
-import BaseSelect from '../../components/BaseSelect.vue';
+import BaseSelect from '@/components/BaseSelect.vue';
 
 describe('BaseSelect', () => {
   const defaultProps = {
