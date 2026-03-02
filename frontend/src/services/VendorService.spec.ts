@@ -5,7 +5,7 @@ const mockFetch = vi.fn();
 vi.stubGlobal('fetch', mockFetch);
 
 describe('VendorService', () => {
-  let VendorService: typeof import('../../services/VendorService').VendorService;
+  let VendorService: typeof import('./VendorService').VendorService;
 
   const mockVendors: Vendor[] = [
     {
@@ -28,7 +28,7 @@ describe('VendorService', () => {
     vi.resetModules();
     mockFetch.mockReset();
 
-    const module = await import('../../services/VendorService');
+    const module = await import('./VendorService');
     VendorService = module.VendorService;
   });
 

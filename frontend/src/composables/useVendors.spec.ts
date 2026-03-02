@@ -81,8 +81,8 @@ describe('useVendors', () => {
       const { result } = withSetup(() => useVendors());
       await flushPromises();
 
-      expect(result.vendors.value[0].name).toBe('Test Company 2');
-      expect(result.vendors.value[1].name).toBe('Test Company 1');
+      expect(result.vendors.value[0]?.name).toBe('Test Company 2');
+      expect(result.vendors.value[1]?.name).toBe('Test Company 1');
     });
 
     it('should set loading state while fetching', () => {
@@ -156,9 +156,9 @@ describe('useVendors', () => {
     it('should update a vendor and invalidate queries', async () => {
       const updatedVendor: VendorInput = {
         name: 'Updated Company',
-        contact_person: mockVendors[0].contact_person,
-        email: mockVendors[0].email,
-        partner_type: mockVendors[0].partner_type,
+        contact_person: mockVendors[0]?.contact_person ?? '',
+        email: mockVendors[0]?.email ?? '',
+        partner_type: mockVendors[0]?.partner_type ?? 'Supplier',
       };
       vi.mocked(VendorService.getVendors).mockResolvedValue(mockVendors);
       vi.mocked(VendorService.updateVendor).mockResolvedValue({ ...updatedVendor, id: 1 });
@@ -183,7 +183,12 @@ describe('useVendors', () => {
       await expect(
         result.updateVendor.mutateAsync({
           id: 1,
-          vendor: { ...mockVendors[0], email: 'jane@testcompany.com' },
+          vendor: {
+            name: mockVendors[0]?.name ?? '',
+            contact_person: mockVendors[0]?.contact_person ?? '',
+            email: 'jane@testcompany.com',
+            partner_type: mockVendors[0]?.partner_type ?? 'Supplier',
+          },
         })
       ).rejects.toThrow('Email already exists');
     });

@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { mount } from '@vue/test-utils';
-import BaseSelect from '@/components/BaseSelect.vue';
+import BaseSelect from '@/components/base/BaseSelect.vue';
 
 describe('BaseSelect', () => {
   const defaultProps = {
@@ -25,8 +25,8 @@ describe('BaseSelect', () => {
     const options = wrapper.findAll('option');
 
     expect(options).toHaveLength(2);
-    expect(options[0].text()).toBe('Supplier');
-    expect(options[1].text()).toBe('Partner');
+    expect(options[0]?.text()).toBe('Supplier');
+    expect(options[1]?.text()).toBe('Partner');
   });
 
   it('renders placeholder option when placeholder prop is provided', () => {
@@ -34,8 +34,8 @@ describe('BaseSelect', () => {
     const options = wrapper.findAll('option');
 
     expect(options).toHaveLength(3);
-    expect(options[0].text()).toBe('All Types');
-    expect(options[0].element.value).toBe('');
+    expect(options[0]?.text()).toBe('All Types');
+    expect(options[0]?.element.value).toBe('');
   });
 
   it('does not render placeholder option when placeholder is not provided', () => {
@@ -43,7 +43,7 @@ describe('BaseSelect', () => {
     const options = wrapper.findAll('option');
 
     expect(options).toHaveLength(2);
-    expect(options[0].text()).toBe('Supplier');
+    expect(options[0]?.text()).toBe('Supplier');
   });
 
   it('sets the select value from modelValue prop', () => {

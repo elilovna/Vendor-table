@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { ref, defineAsyncComponent } from 'vue';
-import VendorList from '@/components/Table/VendorList.vue';
-import SunIcon from '@/components/Icons/SunIcon.vue';
-import MoonIcon from '@/components/Icons/MoonIcon.vue';
+import VendorList from '@/components/vendor/VendorList.vue';
+import SunIcon from '@/components/base/Icons/SunIcon.vue';
+import MoonIcon from '@/components/base/Icons/MoonIcon.vue';
 import { useDarkMode } from '@/composables/useDarkMode';
 import type { Vendor } from '@/types/Vendor';
 
-const VendorForm = defineAsyncComponent(() => import('@/components/VendorForm.vue'));
+const VendorForm = defineAsyncComponent(() => import('@/components/vendor/VendorForm.vue'));
 
 const { isDark, toggle } = useDarkMode();
 const showVendorForm = ref(false);

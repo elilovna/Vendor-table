@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { mount } from '@vue/test-utils';
-import ConfirmDialog from '@/components/ConfirmDialog.vue';
+import ConfirmDialog from '@/components/base/ConfirmDialog.vue';
 
 describe('ConfirmDialog', () => {
   const defaultProps = {
@@ -50,8 +50,8 @@ describe('ConfirmDialog', () => {
     const wrapper = mountDialog();
     const buttons = wrapper.findAll('button');
 
-    expect(buttons[0].text()).toBe('Cancel');
-    expect(buttons[1].text()).toBe('Delete');
+    expect(buttons[0]?.text()).toBe('Cancel');
+    expect(buttons[1]?.text()).toBe('Delete');
   });
 
   it('renders as a dialog element', () => {

@@ -1,9 +1,9 @@
 import { h } from 'vue'
 import { createColumnHelper } from '@tanstack/vue-table'
 import type { ColumnDef, RowData } from '@tanstack/vue-table'
-import PencilIcon from '@/components/Icons/PencilIcon.vue'
-import TrashIcon from '@/components/Icons/TrashIcon.vue'
-import EyeIcon from '@/components/Icons/EyeIcon.vue'
+import PencilIcon from '@/components/base/Icons/PencilIcon.vue'
+import TrashIcon from '@/components/base/Icons/TrashIcon.vue'
+import EyeIcon from '@/components/base/Icons/EyeIcon.vue'
 import type { Vendor } from '@/types/Vendor'
 
 declare module '@tanstack/vue-table' {
