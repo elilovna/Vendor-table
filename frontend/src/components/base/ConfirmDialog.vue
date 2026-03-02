@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useTemplateRef } from 'vue';
-import AlertCircleIcon from '@/components/Icons/AlertCircleIcon.vue';
+import AlertCircleIcon from './Icons/AlertCircleIcon.vue';
 import { useDialog } from '@/composables/useDialog';
 
 const props = defineProps<{

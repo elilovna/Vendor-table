@@ -3,8 +3,8 @@ import { computed, watch, useTemplateRef } from 'vue';
 import { useForm, useField } from 'vee-validate';
 import { useVendors } from '@/composables/useVendors';
 import { useDialog } from '@/composables/useDialog';
-import BaseSelect from '@/components/BaseSelect.vue';
-import XIcon from '@/components/Icons/XIcon.vue';
+import BaseSelect from '@/components/base/BaseSelect.vue';
+import XIcon from '@/components/base/Icons/XIcon.vue';
 import { PARTNER_TYPES } from '@/types/Vendor';
 import type { Vendor, VendorInput, PartnerType } from '@/types/Vendor';
 

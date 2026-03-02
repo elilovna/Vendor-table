@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { mount } from '@vue/test-utils';
-import VendorDetailPanel from '@/components/VendorDetailPanel.vue';
+import VendorDetailPanel from '@/components/vendor/VendorDetailPanel.vue';
 import type { Vendor } from '@/types/Vendor';
 
 describe('VendorDetailPanel', () => {
@@ -35,8 +35,8 @@ describe('VendorDetailPanel', () => {
     const fields = wrapper.findAll('.vendor-detail__field');
     const contactField = fields[0];
 
-    expect(contactField.find('.vendor-detail__label').text()).toBe('Contact Person');
-    expect(contactField.find('.vendor-detail__value').text()).toBe('Jane Smith');
+    expect(contactField?.find('.vendor-detail__label').text()).toBe('Contact Person');
+    expect(contactField?.find('.vendor-detail__value').text()).toBe('Jane Smith');
   });
 
   it('displays email', () => {
@@ -44,8 +44,8 @@ describe('VendorDetailPanel', () => {
     const fields = wrapper.findAll('.vendor-detail__field');
     const emailField = fields[1];
 
-    expect(emailField.find('.vendor-detail__label').text()).toBe('Email');
-    expect(emailField.find('.vendor-detail__value').text()).toBe('jane@acme.com');
+    expect(emailField?.find('.vendor-detail__label').text()).toBe('Email');
+    expect(emailField?.find('.vendor-detail__value').text()).toBe('jane@acme.com');
   });
 
   it('displays partner type with correct badge class', () => {

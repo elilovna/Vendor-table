@@ -11,10 +11,10 @@ import {
 } from '@tanstack/vue-table'
 import { useVendors } from '@/composables/useVendors'
 import { useTableUrlState } from '@/composables/useTableUrlState'
-import { createVendorColumns } from '@/components/Table/vendorColumns'
-import BaseSelect from '@/components/BaseSelect.vue'
-import SearchIcon from '@/components/Icons/SearchIcon.vue'
-import PlusIcon from '@/components/Icons/PlusIcon.vue'
+import { createVendorColumns } from './vendorColumns'
+import BaseSelect from '@/components/base/BaseSelect.vue'
+import SearchIcon from '@/components/base/Icons/SearchIcon.vue'
+import PlusIcon from '@/components/base/Icons/PlusIcon.vue'
 import { PARTNER_TYPES } from '@/types/Vendor'
 import type { Vendor, PartnerType } from '@/types/Vendor'
 
@@ -23,8 +23,8 @@ const emit = defineEmits<{
   editVendor: [vendor: Vendor]
 }>()
 
-const ConfirmDialog = defineAsyncComponent(() => import('@/components/ConfirmDialog.vue'))
-const VendorDetailPanel = defineAsyncComponent(() => import('@/components/VendorDetailPanel.vue'))
+const ConfirmDialog = defineAsyncComponent(() => import('@/components/base/ConfirmDialog.vue'))
+const VendorDetailPanel = defineAsyncComponent(() => import('./VendorDetailPanel.vue'))
 
 const { vendors, isLoading, error, deleteVendor } = useVendors()
 const { searchQuery, sorting, partnerTypeFilter } = useTableUrlState()

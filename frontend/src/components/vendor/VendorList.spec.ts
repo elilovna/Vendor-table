@@ -2,8 +2,8 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { mount, flushPromises } from '@vue/test-utils';
 import { QueryClient, VueQueryPlugin } from '@tanstack/vue-query';
 import { createRouter, createMemoryHistory } from 'vue-router';
-import VendorList from '@/components/Table/VendorList.vue';
-import ConfirmDialog from '@/components/ConfirmDialog.vue';
+import VendorList from '@/components/vendor/VendorList.vue';
+import ConfirmDialog from '@/components/base/ConfirmDialog.vue';
 import { VendorService } from '@/services/VendorService';
 import type { Vendor } from '@/types/Vendor';
 
@@ -224,7 +224,7 @@ describe('VendorList', () => {
       const deleteButtons = wrapper.findAll('[aria-label^="Delete"]');
       expect(deleteButtons.length).toBeGreaterThan(0);
 
-      await deleteButtons[0].trigger('click');
+      await deleteButtons[0]?.trigger('click');
       await flushPromises();
 
       expect(wrapper.find('.confirm-dialog').exists()).toBe(true);
@@ -239,7 +239,7 @@ describe('VendorList', () => {
       await flushPromises();
 
       const deleteButtons = wrapper.findAll('[aria-label^="Delete"]');
-      await deleteButtons[0].trigger('click');
+      await deleteButtons[0]?.trigger('click');
       await flushPromises();
 
       wrapper.findComponent(ConfirmDialog).vm.$emit('confirm');
@@ -247,7 +247,7 @@ describe('VendorList', () => {
 
       // useVendors reverses the array, so first row is last mock vendor
       const reversedVendors = [...mockVendors].reverse();
-      expect(VendorService.deleteVendor).toHaveBeenCalledWith(reversedVendors[0].id);
+      expect(VendorService.deleteVendor).toHaveBeenCalledWith(reversedVendors[0]?.id);
     });
   });
 
@@ -261,7 +261,7 @@ describe('VendorList', () => {
       const editButtons = wrapper.findAll('[aria-label^="Edit"]');
       expect(editButtons.length).toBeGreaterThan(0);
 
-      await editButtons[0].trigger('click');
+      await editButtons[0]?.trigger('click');
       await flushPromises();
 
       // useVendors reverses the array, so first row is last mock vendor

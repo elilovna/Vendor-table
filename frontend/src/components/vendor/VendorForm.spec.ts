@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { mount, flushPromises } from '@vue/test-utils';
 import { QueryClient, VueQueryPlugin } from '@tanstack/vue-query';
-import VendorForm from '@/components/VendorForm.vue';
+import VendorForm from '@/components/vendor/VendorForm.vue';
 import { VendorService } from '@/services/VendorService';
 import type { Vendor } from '@/types/Vendor';
 
@@ -74,8 +74,8 @@ describe('VendorForm', () => {
       const options = wrapper.findAll('#partnerType option');
 
       expect(options.length).toBe(2);
-      expect(options[0].text()).toBe('Supplier');
-      expect(options[1].text()).toBe('Partner');
+      expect(options[0]?.text()).toBe('Supplier');
+      expect(options[1]?.text()).toBe('Partner');
     });
 
     it('renders as a dialog element', () => {

@@ -29,7 +29,7 @@ describe('useDarkMode', () => {
   });
 
   it('should default to light mode when no stored preference and system prefers light', async () => {
-    const { useDarkMode } = await import('../../composables/useDarkMode');
+    const { useDarkMode } = await import('./useDarkMode');
     const { isDark } = useDarkMode();
 
     expect(isDark.value).toBe(false);
@@ -43,7 +43,7 @@ describe('useDarkMode', () => {
       removeEventListener: vi.fn(),
     })));
 
-    const { useDarkMode } = await import('../../composables/useDarkMode');
+    const { useDarkMode } = await import('./useDarkMode');
     const { isDark } = useDarkMode();
 
     expect(isDark.value).toBe(true);
@@ -52,7 +52,7 @@ describe('useDarkMode', () => {
   it('should use stored dark preference from localStorage', async () => {
     localStorageMock['theme'] = 'dark';
 
-    const { useDarkMode } = await import('../../composables/useDarkMode');
+    const { useDarkMode } = await import('./useDarkMode');
     const { isDark } = useDarkMode();
 
     expect(isDark.value).toBe(true);
@@ -68,14 +68,14 @@ describe('useDarkMode', () => {
       removeEventListener: vi.fn(),
     })));
 
-    const { useDarkMode } = await import('../../composables/useDarkMode');
+    const { useDarkMode } = await import('./useDarkMode');
     const { isDark } = useDarkMode();
 
     expect(isDark.value).toBe(false);
   });
 
   it('should toggle dark mode', async () => {
-    const { useDarkMode } = await import('../../composables/useDarkMode');
+    const { useDarkMode } = await import('./useDarkMode');
     const { isDark, toggle } = useDarkMode();
 
     const initialValue = isDark.value;
@@ -87,7 +87,7 @@ describe('useDarkMode', () => {
   it('should set data-theme attribute on document element', async () => {
     localStorageMock['theme'] = 'dark';
 
-    await import('../../composables/useDarkMode');
+    await import('./useDarkMode');
 
     expect(document.documentElement.getAttribute('data-theme')).toBe('dark');
   });
@@ -95,7 +95,7 @@ describe('useDarkMode', () => {
   it('should persist theme to localStorage', async () => {
     localStorageMock['theme'] = 'light';
 
-    await import('../../composables/useDarkMode');
+    await import('./useDarkMode');
 
     expect(localStorage.setItem).toHaveBeenCalledWith('theme', 'light');
   });

@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { useTemplateRef } from 'vue'
-import XIcon from '@/components/Icons/XIcon.vue'
-import PencilIcon from '@/components/Icons/PencilIcon.vue'
-import TrashIcon from '@/components/Icons/TrashIcon.vue'
+import XIcon from '@/components/base/Icons/XIcon.vue'
+import PencilIcon from '@/components/base/Icons/PencilIcon.vue'
+import TrashIcon from '@/components/base/Icons/TrashIcon.vue'
 import type { Vendor } from '@/types/Vendor'
 import { useDialog } from '@/composables/useDialog'
 
