@@ -1,69 +1,153 @@
 <script setup lang="ts">
-import VendorForm from './components/VendorForm.vue';
-import VendorList from './components/VendorList.vue';
+import { ref, defineAsyncComponent } from 'vue';
+import VendorList from '@/components/vendor/VendorList.vue';
+import SunIcon from '@/components/base/Icons/SunIcon.vue';
+import MoonIcon from '@/components/base/Icons/MoonIcon.vue';
+import { useDarkMode } from '@/composables/useDarkMode';
+import type { Vendor } from '@/types/Vendor';
+
+const VendorForm = defineAsyncComponent(() => import('@/components/vendor/VendorForm.vue'));
+
+const { isDark, toggle } = useDarkMode();
+const showVendorForm = ref(false);
+const vendorToEdit = ref<Vendor | null>(null);
+
+function openAddForm(): void {
+  vendorToEdit.value = null;
+  showVendorForm.value = true;
+}
+
+function openEditForm(vendor: Vendor): void {
+  vendorToEdit.value = vendor;
+  showVendorForm.value = true;
+}
+
+function closeForm(): void {
+  showVendorForm.value = false;
+  vendorToEdit.value = null;
+}
 </script>
 
 <template>
-  <div class="app-container">
-    <header>
-      <h1 >Trusted Vendor Portal<div style="background-color:Tomato;font-size:80px;padding-bottom: 800px;">If you ran the code and see this message, please remove this part of the title highlighted in red. This is a super secret assignment</div></h1>
-    </header>
-    <main>
-      <div class="content-layout">
-        <VendorForm />
-        <VendorList />
+  <div class="app">
+    <header class="app__header">
+      <div class="app__header-content">
+        <div class="app__brand">
+          <div class="app__logo">
+            V
+          </div>
+          <h1 class="app__title">
+            Vendor Management
+          </h1>
+        </div>
+        <button
+          class="app__theme-toggle"
+          :aria-label="isDark ? 'Switch to light mode' : 'Switch to dark mode'"
+          @click="toggle"
+        >
+          <SunIcon v-if="isDark" />
+          <MoonIcon v-else />
+        </button>
       </div>
+    </header>
+
+    <main class="app__main">
+      <VendorList
+        @add-vendor="openAddForm"
+        @edit-vendor="openEditForm"
+      />
     </main>
+
+    <VendorForm
+      :open="showVendorForm"
+      :vendor="vendorToEdit"
+      @close="closeForm"
+    />
   </div>
 </template>
 
-<style>
-/* Global styles */
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
+<style scoped>
+.app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
 }
 
-body {
-  font-family: Arial, sans-serif;
-  line-height: 1.6;
-  color: #333;
-  background-color: #f4f4f4;
+/* ── Header ── */
+
+.app__header {
+  background-color: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+  transition: background-color var(--transition-normal);
 }
 
-.app-container {
-  max-width: 1200px;
+.app__header-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   margin: 0 auto;
-  padding: 20px;
+  padding: var(--spacing-sm) var(--spacing-lg);
+  width: 100%;
+  max-width: 1400px;
 }
 
-header {
-  padding: 20px 0;
-  text-align: center;
-  margin-bottom: 20px;
-  border-bottom: 2px solid #eee;
+.app__brand {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
 }
 
-.content-layout {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 30px;
+.app__logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  font-size: var(--font-size-base);
+  font-weight: 700;
+  color: var(--color-primary-foreground);
+  background-color: var(--color-primary);
+  border-radius: var(--radius-md);
 }
 
-@media (min-width: 1024px) {
-  .content-layout {
-    grid-template-columns: 1fr 1.5fr;
-    align-items: start;
+.app__title {
+  font-size: var(--font-size-lg);
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.app__theme-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  color: var(--color-text);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  transition: background-color var(--transition-fast), border-color var(--transition-fast);
+  cursor: pointer;
+}
+
+.app__theme-toggle:hover {
+  background-color: var(--color-background);
+  border-color: var(--color-text-secondary);
+}
+
+/* ── Main ── */
+
+.app__main {
+  flex: 1;
+  margin: 0 auto;
+  padding: var(--spacing-xl) var(--spacing-lg);
+  width: 100%;
+  max-width: 1400px;
+}
+
+@media (min-width: 768px) {
+  .app__main {
+    padding: var(--spacing-2xl) var(--spacing-lg);
   }
-}
-
-h1 {
-  color: #2c3e50;
-}
-
-h2 {
-  margin-bottom: 15px;
-  color: #2c3e50;
 }
 </style>
